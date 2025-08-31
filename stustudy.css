@@ -1,0 +1,50 @@
+body {
+margin: 0;
+font-family: Arial, sans-serif;
+background-color: blue;
+position: relative;
+}
+
+.container {
+position: relative;
+width: max-content;
+margin: 20px auto;
+}
+
+h1 {
+color: lime;
+margin: 0 0 10px 0;
+position: relative;
+z-index: 2;
+}
+
+.color-button {
+position: relative; /* so buttons stay on top */
+height: 50px;
+cursor: pointer;
+margin-right: 10px;
+z-index: 2;
+}
+
+#blueButton {
+background-color: blue;
+color: lime;
+}
+
+#pinkButton {
+background-color: pink;
+}
+
+.image-grid {
+display: grid;
+grid-template-columns: repeat(2, 150px);
+gap: 20px;
+position: relative;
+z-index: 1; /* behind text/buttons */
+}
+
+.image-grid img {
+width: 150px;
+height: auto;
+border-radius: 8px;
+}

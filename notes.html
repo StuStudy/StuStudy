@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Notes</title>
+<link rel="icon" type="image/png"  href="NOTES.png">
+<style>
+html, body {
+height: 100%;
+margin: 0;
+font-family: Arial, sans-serif;
+overflow: auto;
+transition: background 0.5s ease;
+padding: 20px;
+background-attachment: fixed;
+}
+
+body.blue-theme {
+background: linear-gradient(-45deg, #2196f3, #00bcd4, #1a237e, #0d47a1);
+background-size: 400% 400%;
+animation: gradientMove 20s ease infinite;
+}
+
+body.pink-theme {
+background: linear-gradient(-45deg, #ff4081, #f50057, #ec407a, #f06292);
+background-size: 400% 400%;
+animation: gradientMove 20s ease infinite;
+}
+
+@keyframes gradientMove {
+0% { background-position: 0% 50%; }
+50% { background-position: 100% 50%; }
+100% { background-position: 0% 50%; }
+}
+
+.color-button {
+position: fixed;
+top: 10px;
+height: 50px;
+cursor: pointer;
+z-index: 9999;
+padding: 0 15px;
+border: none;
+border-radius: 8px;
+font-size: 16px;
+box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+color: white;
+font-weight: bold;
+}
+
+#blueButton {
+right: 90px;
+background-color: #1976d2;
+}
+
+#pinkButton {
+right: 10px;
+background-color: #e91e63;
+}
+
+.note-container {
+position: relative;
+display: inline-block;
+margin: 10px;
+vertical-align: top;
+}
+
+textarea {
+width: 250px;
+height: 150px;
+padding: 10px;
+resize: vertical;
+font-size: 14px;
+border-radius: 6px;
+border: none;
+box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+font-family: inherit;
+box-sizing: border-box;
+background-color: lime;
+color: black;
+transition: background 0.3s;
+}
+
+input.note-title {
+margin-top: 8px;
+width: 250px;
+padding: 6px 8px;
+font-size: 14px;
+border-radius: 4px;
+border: 1px solid #ccc;
+box-sizing: border-box;
+font-family: inherit;
+}
+
+.settings-icon {
+position: absolute;
+top: 6px;
+right: 6px;
+background: rgba(0,0,0,0.6);
+color: white;
+border: none;
+border-radius: 4px;
+padding: 4px 8px;
+font-size: 14px;
+cursor: pointer;
+z-index: 10;
+}
+
+.settings-menu {
+position: absolute;
+top: 35px;
+right: 6px;
+background: rgba(0,0,0,0.9);
+border-radius: 6px;
+padding: 6px;
+display: none;
+flex-direction: column;
+gap: 6px;
+z-index: 10;
+}
+
+.settings-menu button {
+background: transparent;
+color: white;
+border: none;
+cursor: pointer;
+font-size: 13px;
+padding: 4px 6px;
+border-radius: 4px;
+text-align: left;
+transition: background 0.2s;
+}
+
+.settings-menu button:hover {
+background: rgba(255, 255, 255, 0.1);
+}
+
+.color-options button {
+color: black;
+border: 1px solid #ccc;
+padding: 2px 6px;
+border-radius: 4px;
+font-size: 12px;
+cursor: pointer;
+}
+
+h1 {
+color: lime;
+text-align: center;
+margin-bottom: 20px;
+}
+</style>
+</head>
+<body>
+
+<button id="blueButton" class="color-button">Blue</button>
+<button id="pinkButton" class="color-button">Pink</button>
+
+<h1>Your Notes Will Be Safe!</h1>
+
+<div id="notes-wrapper"></div>
+
+<script>
+const body = document.body;
+const blueButton = document.getElementById("blueButton");
+const pinkButton = document.getElementById("pinkButton");
+const notesWrapper = document.getElementById("notes-wrapper");
+const NUM_NOTES = 15;
+
+window.onload = function () {
+const savedTheme = localStorage.getItem("selectedTheme");
+if (savedTheme) {
+body.classList.add(savedTheme);
+} else {
+body.classList.add("blue-theme");
+}
+generateNotes();
+};
+
+blueButton.onclick = () => {
+body.classList.remove("pink-theme");
+body.classList.add("blue-theme");
+localStorage.setItem("selectedTheme", "blue-theme");
+};
+
+pinkButton.onclick = () => {
+body.classList.remove("blue-theme");
+body.classList.add("pink-theme");
+localStorage.setItem("selectedTheme", "pink-theme");
+};
+
+function generateNotes() {
+for (let i = 0; i < NUM_NOTES; i++) {
+const container = document.createElement('div');
+container.className = 'note-container';
+
+const textarea = document.createElement('textarea');
+textarea.id = 'note-' + i;
+textarea.placeholder = "Put Your Notes!";
+const savedContent = localStorage.getItem(textarea.id);
+if (savedContent) textarea.value = savedContent;
+
+const savedColor = localStorage.getItem('color-' + i);
+if (savedColor) textarea.style.backgroundColor = savedColor;
+
+textarea.addEventListener('input', () => {
+localStorage.setItem(textarea.id, textarea.value);
+});
+
+const titleInput = document.createElement('input');
+titleInput.type = 'text';
+titleInput.placeholder = 'Title...';
+titleInput.className = 'note-title';
+titleInput.id = 'title-' + i;
+const savedTitle = localStorage.getItem(titleInput.id);
+if (savedTitle) titleInput.value = savedTitle;
+titleInput.addEventListener('input', () => {
+localStorage.setItem(titleInput.id, titleInput.value);
+});
+
+const settingsBtn = document.createElement('button');
+settingsBtn.className = 'settings-icon';
+settingsBtn.innerText = '⚙️';
+
+const settingsMenu = document.createElement('div');
+settingsMenu.className = 'settings-menu';
+
+const colorOptions = document.createElement('div');
+colorOptions.className = 'color-options';
+colorOptions.style.display = 'flex';
+colorOptions.style.flexWrap = 'wrap';
+colorOptions.style.gap = '5px';
+
+const colors = [
+{ name: 'Yellow', value: 'yellow' },
+{ name: 'Pink', value: 'pink' },
+{ name: 'Light Blue', value: '#add8e6' },
+{ name: 'White', value: 'white' },
+{ name: 'Light Green', value: '#90ee90' },
+{ name: 'Lime', value: 'lime' }
+];
+
+colors.forEach(color => {
+const btn = document.createElement('button');
+btn.textContent = color.name;
+btn.style.background = color.value;
+btn.onclick = () => {
+textarea.style.backgroundColor = color.value;
+localStorage.setItem('color-' + i, color.value);
+};
+colorOptions.appendChild(btn);
+});
+
+const copyBtn = document.createElement('button');
+copyBtn.textContent = 'Copy';
+copyBtn.onclick = () => {
+textarea.select();
+navigator.clipboard.writeText(textarea.value).then(() => {
+copyBtn.textContent = 'Copied!';
+setTimeout(() => {
+copyBtn.textContent = 'Copy';
+}, 1500);
+});
+};
+
+const deleteBtn = document.createElement('button');
+deleteBtn.textContent = 'Delete';
+deleteBtn.onclick = () => {
+textarea.value = '';
+titleInput.value = '';
+localStorage.removeItem(textarea.id);
+localStorage.removeItem(titleInput.id);
+localStorage.removeItem('color-' + i);
+};
+
+const backBtn = document.createElement('button');
+backBtn.textContent = 'Back';
+backBtn.onclick = () => {
+settingsMenu.style.display = 'none';
+settingsBtn.style.display = 'block';
+};
+
+settingsMenu.append(colorOptions, copyBtn, deleteBtn, backBtn);
+
+settingsBtn.onclick = () => {
+settingsMenu.style.display = 'flex';
+settingsMenu.style.flexDirection = 'column';
+settingsBtn.style.display = 'none';
+};
+
+container.append(textarea, titleInput, settingsBtn, settingsMenu);
+notesWrapper.appendChild(container);
+}
+}
+</script>
+
+</body>
+</html>

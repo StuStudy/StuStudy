@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Daily List</title>
+<link rel="icon" type="image/png" href="LIST.png">
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+body {
+height: 100vh;
+font-family: Arial, sans-serif;
+background-size: 400% 400%;
+animation: gradientMove 20s ease infinite;
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 20px;
+transition: background 0.5s ease;
+}
+
+body.blue-theme {
+background: linear-gradient(-45deg, #2196f3, #00bcd4, #1a237e, #0d47a1);
+}
+
+body.pink-theme {
+background: linear-gradient(-45deg, #ff4081, #f50057, #ec407a, #f06292);
+}
+
+@keyframes gradientMove {
+0% { background-position: 0% 50%; }
+50% { background-position: 100% 50%; }
+100% { background-position: 0% 50%; }
+}
+
+h1 {
+color: white;
+margin-bottom: 20px;
+text-shadow: 2px 2px 5px rgba(0,0,0,0.4);
+}
+
+.color-button {
+position: fixed;
+top: 10px;
+height: 40px;
+padding: 0 15px;
+border: none;
+border-radius: 8px;
+font-size: 16px;
+color: white;
+font-weight: bold;
+cursor: pointer;
+z-index: 999;
+}
+
+#blueButton {
+right: 80px;
+background-color: #1976d2;
+}
+
+#pinkButton {
+right: 10px;
+background-color: #e91e63;
+}
+
+.table-container {
+max-height: 70vh;
+overflow-y: auto;
+border-radius: 10px;
+padding: 20px;
+background: rgba(0, 0, 0, 0.4);
+backdrop-filter: blur(6px);
+width: 90vw;
+max-width: 1000px;
+box-shadow: 0 0 15px rgba(0,0,0,0.4);
+}
+
+table {
+width: 100%;
+border-collapse: collapse;
+}
+
+th, td {
+padding: 10px;
+border: 1px solid #aaa;
+text-align: center;
+color: white;
+}
+
+th {
+background: rgba(255, 255, 255, 0.1);
+font-size: 1.1rem;
+}
+
+td {
+background: rgba(255, 255, 255, 0.05);
+}
+
+td:hover {
+background: rgba(255, 255, 255, 0.15);
+}
+
+input[type="text"] {
+width: 100%;
+background: transparent;
+border: none;
+color: white;
+font-size: 1rem;
+text-align: center;
+outline: none;
+}
+
+input:focus {
+background-color: rgba(255,255,255,0.1);
+border: 1px solid white;
+border-radius: 5px;
+}
+
+::-webkit-scrollbar {
+width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+background: rgba(255,255,255,0.2);
+border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+background: rgba(255,255,255,0.4);
+}
+</style>
+</head>
+<body>
+<button id="blueButton" class="color-button">Blue</button>
+<button id="pinkButton" class="color-button">Pink</button>
+
+<h1>Daily Activity List</h1>
+
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Activity</th>
+<th>Time</th>
+<th>Duration</th>
+</tr>
+</thead>
+<tbody id="table-body"></tbody>
+</table>
+</div>
+
+<script>
+const tbody = document.getElementById('table-body');
+const blueBtn = document.getElementById("blueButton");
+const pinkBtn = document.getElementById("pinkButton");
+const body = document.body;
+
+const NUM_ROWS = 100;
+
+let savedTheme = localStorage.getItem("selectedTheme");
+if (savedTheme) {
+body.classList.add(savedTheme);
+} else {
+body.classList.add("blue-theme");
+}
+
+blueBtn.onclick = () => {
+body.classList.remove("pink-theme");
+body.classList.add("blue-theme");
+localStorage.setItem("selectedTheme", "blue-theme");
+};
+
+pinkBtn.onclick = () => {
+body.classList.remove("blue-theme");
+body.classList.add("pink-theme");
+localStorage.setItem("selectedTheme", "pink-theme");
+};
+
+let savedData = JSON.parse(localStorage.getItem("tableData")) || Array(NUM_ROWS).fill().map(() => ["", "", ""]);
+
+function renderTable(data) {
+tbody.innerHTML = "";
+for (let i = 0; i < data.length; i++) {
+const row = document.createElement("tr");
+
+for (let j = 0; j < 3; j++) {
+const cell = document.createElement("td");
+const input = document.createElement("input");
+input.type = "text";
+input.value = data[i][j];
+input.placeholder = `Row ${i+1}, Col ${j+1}`;
+input.addEventListener("input", () => {
+savedData[i][j] = input.value;
+localStorage.setItem("tableData", JSON.stringify(savedData));
+});
+cell.appendChild(input);
+row.appendChild(cell);
+}
+
+tbody.appendChild(row);
+}
+}
+
+renderTable(savedData);
+</script>
+</body>
+</html>

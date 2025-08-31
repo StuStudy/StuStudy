@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Musics</title>
+<link rel="icon" type="image/png" href="MUSIC.png">
+<style>
+body {
+margin: 0;
+font-family: Arial, sans-serif;
+min-height: 100vh;
+padding: 20px;
+overflow: hidden;
+}
+
+/* Animated gradient backgrounds */
+body.blue-theme {
+background: linear-gradient(-45deg, #2196f3, #00bcd4, #1a237e, #0d47a1);
+background-size: 400% 400%;
+animation: gradientMove 20s ease infinite;
+color: white;
+}
+
+body.pink-theme {
+background: linear-gradient(-45deg, #ff4081, #f50057, #ec407a, #f06292);
+background-size: 400% 400%;
+animation: gradientMove 20s ease infinite;
+color: white;
+}
+
+@keyframes gradientMove {
+0% { background-position: 0% 50%; }
+50% { background-position: 100% 50%; }
+100% { background-position: 0% 50%; }
+}
+
+.color-button {
+position: fixed;
+top: 10px;
+height: 40px;
+cursor: pointer;
+z-index: 1000;
+padding: 0 12px;
+border: none;
+border-radius: 6px;
+font-size: 14px;
+box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+color: white;
+font-weight: bold;
+}
+
+#blueButton { background-color: #1976d2; right: 70px; }
+#pinkButton { background-color: #e91e63; right: 10px; }
+
+h1, h3 { text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
+
+audio {
+display: block;
+margin-bottom: 15px;
+width: 100%;
+max-width: 400px;
+}
+</style>
+</head>
+<body>
+
+<h1 style="color:lime;">Listen To Relaxing Musics!</h1>
+<hr>
+<h3 style="color:lime;">Relaxing Musics 🎵</h3>
+
+<audio src="relaxing1.mp3" controls></audio>
+<audio src="relaxing2.mp3" controls></audio>
+<audio src="relaxing3.mp3" controls></audio>
+
+<button id="blueButton" class="color-button">Blue</button>
+<button id="pinkButton" class="color-button">Pink</button>
+
+<script>
+const body = document.body;
+const blueButton = document.getElementById("blueButton");
+const pinkButton = document.getElementById("pinkButton");
+
+// Apply saved theme on load
+window.onload = function () {
+const savedTheme = localStorage.getItem("selectedTheme");
+if (savedTheme) {
+body.classList.remove("blue-theme", "pink-theme");
+body.classList.add(savedTheme);
+} else {
+body.classList.add("blue-theme");
+}
+};
+
+blueButton.onclick = function () {
+body.classList.remove("pink-theme");
+body.classList.add("blue-theme");
+localStorage.setItem("selectedTheme", "blue-theme");
+};
+
+pinkButton.onclick = function () {
+body.classList.remove("blue-theme");
+body.classList.add("pink-theme");
+localStorage.setItem("selectedTheme", "pink-theme");
+};
+</script>
+
+</body>
+</html>

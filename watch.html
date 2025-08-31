@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Multi Timer & Stopwatch with Persistence</title>
+<link rel="icon" type="image/png" href="WATCH.png">
+<style>
+/* Background & theme */
+body {
+margin: 0;
+font-family: Arial, sans-serif;
+min-height: 100vh;
+padding: 20px;
+transition: background 0.5s ease;
+}
+body.blue-theme {
+background: linear-gradient(-45deg, #2196f3, #00bcd4, #1a237e, #0d47a1);
+background-size: 400% 400%;
+animation: gradientMove 20s ease infinite;
+color: white;
+}
+body.pink-theme {
+background: linear-gradient(-45deg, #ff4081, #f50057, #ec407a, #f06292);
+background-size: 400% 400%;
+animation: gradientMove 20s ease infinite;
+color: white;
+}
+@keyframes gradientMove {
+0% { background-position: 0% 50%; }
+50% { background-position: 100% 50%; }
+100% { background-position: 0% 50%; }
+}
+
+/* Theme buttons */
+.color-button {
+position: fixed;
+top: 10px;
+height: 40px;
+cursor: pointer;
+z-index: 1000;
+padding: 0 12px;
+border: none;
+border-radius: 6px;
+font-size: 14px;
+box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+color: white;
+font-weight: bold;
+user-select: none;
+}
+#blueButton { right: 90px; background-color: #1976d2; }
+#pinkButton { right: 20px; background-color: #e91e63; }
+
+/* Container */
+.container {
+max-width: 900px;
+margin: 70px auto 40px;
+}
+
+h1 {
+text-align: center;
+margin-bottom: 40px;
+text-shadow: 1px 1px 5px rgba(0,0,0,0.4);
+}
+
+/* Timers grid */
+.timers-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill,minmax(220px,1fr));
+gap: 20px;
+}
+
+/* Timer card */
+.timer-card {
+background: rgba(255 255 255 / 0.15);
+padding: 20px;
+border-radius: 12px;
+box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+display: flex;
+flex-direction: column;
+align-items: center;
+user-select: none;
+}
+
+.timer-label {
+font-size: 22px;
+margin-bottom: 12px;
+}
+
+.time-display {
+font-size: 36px;
+margin-bottom: 20px;
+font-family: 'Courier New', Courier, monospace;
+letter-spacing: 2px;
+}
+
+.buttons {
+display: flex;
+gap: 10px;
+}
+
+button {
+cursor: pointer;
+border: none;
+border-radius: 6px;
+padding: 8px 14px;
+font-size: 14px;
+font-weight: 600;
+background: rgba(255 255 255 / 0.9);
+color: #222;
+transition: background-color 0.2s ease;
+user-select: none;
+}
+button:hover {
+background: rgba(255 255 255 / 1);
+}
+
+/* Stopwatch special styling */
+#stopwatch .timer-label {
+font-weight: bold;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+.timers-grid {
+grid-template-columns: repeat(auto-fill,minmax(160px,1fr));
+}
+button {
+padding: 6px 10px;
+font-size: 12px;
+}
+}
+</style>
+</head>
+<body>
+
+<button id="blueButton" class="color-button">Blue</button>
+<button id="pinkButton" class="color-button">Pink</button>
+
+<div class="container">
+<h1>Multi Timers & Stopwatch</h1>
+
+<div class="timers-grid" id="timersGrid">
+<!-- Timers injected by JS -->
+</div>
+
+<!-- Stopwatch -->
+<div class="timer-card" id="stopwatch">
+<div class="timer-label">Stopwatch</div>
+<div class="time-display" id="stopwatchDisplay">00:00:00</div>
+<div class="buttons">
+<button id="swStartPause">Start</button>
+<button id="swReset" disabled>Reset</button>
+</div>
+</div>
+</div>
+
+<audio id="alarmSound" src="alarm.mp3" preload="auto"></audio>
+
+<script>
+// --- Theme handling ---
+const body = document.body;
+const blueButton = document.getElementById("blueButton");
+const pinkButton = document.getElementById("pinkButton");
+
+function applyTheme(theme) {
+body.classList.remove("blue-theme", "pink-theme");
+if (theme) body.classList.add(theme);
+localStorage.setItem("selectedTheme", theme);
+}
+
+blueButton.onclick = () => applyTheme("blue-theme");
+pinkButton.onclick = () => applyTheme("pink-theme");
+
+// Load saved theme or default to blue
+window.onload = () => {
+const savedTheme = localStorage.getItem("selectedTheme") || "blue-theme";
+applyTheme(savedTheme);
+loadTimersState();
+loadStopwatchState();
+};
+
+// --- Timer and Stopwatch logic ---
+const timersGrid = document.getElementById('timersGrid');
+const alarmSound = document.getElementById('alarmSound');
+
+// Timer durations in minutes
+const timerMinutes = [5,10,15,30,45,60,75,90,105,120];
+
+// Store timers state
+const timers = [];
+
+// Format seconds into MM:SS
+function formatTime(seconds) {
+const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+const s = (seconds % 60).toString().padStart(2, '0');
+return `${m}:${s}`;
+}
+
+// Create timer elements dynamically
+timerMinutes.forEach((mins, index) => {
+const card = document.createElement('div');
+card.className = 'timer-card';
+
+const label = document.createElement('div');
+label.className = 'timer-label';
+label.textContent = `${mins} Minute Timer`;
+
+const display = document.createElement('div');
+display.className = 'time-display';
+display.textContent = formatTime(mins * 60);
+
+// Buttons
+const btnStartPause = document.createElement('button');
+btnStartPause.textContent = 'Start';
+
+const btnReset = document.createElement('button');
+btnReset.textContent = 'Reset';
+btnReset.disabled = true;
+
+const btnsDiv = document.createElement('div');
+btnsDiv.className = 'buttons';
+btnsDiv.append(btnStartPause, btnReset);
+
+card.append(label, display, btnsDiv);
+timersGrid.appendChild(card);
+
+// Timer object to keep state
+timers.push({
+id: index,
+duration: mins * 60,
+remaining: mins * 60,
+intervalId: null,
+running: false,
+display,
+btnStartPause,
+btnReset
+});
+
+// Button logic
+btnStartPause.onclick = () => {
+const timer = timers[index];
+if (!timer.running && timer.remaining > 0) {
+// Start timer
+timer.intervalId = setInterval(() => {
+timer.remaining--;
+timer.display.textContent = formatTime(timer.remaining);
+saveTimerState(timer);
+if (timer.remaining <= 0) {
+clearInterval(timer.intervalId);
+timer.running = false;
+timer.btnStartPause.textContent = "Start";
+timer.btnReset.disabled = false;
+saveTimerState(timer);
+alarmSound.play();
+}
+}, 1000);
+timer.running = true;
+btnStartPause.textContent = 'Pause';
+btnReset.disabled = false;
+saveTimerState(timer);
+} else if (timer.running) {
+// Pause timer
+clearInterval(timer.intervalId);
+timer.running = false;
+btnStartPause.textContent = 'Start';
+saveTimerState(timer);
+}
+};
+
+btnReset.onclick = () => {
+const timer = timers[index];
+if (timer.intervalId) {
+clearInterval(timer.intervalId);
+timer.intervalId = null;
+}
+timer.remaining = timer.duration;
+timer.display.textContent = formatTime(timer.remaining);
+timer.running = false;
+btnStartPause.textContent = 'Start';
+btnReset.disabled = true;
+saveTimerState(timer);
+};
+});
+
+// Save timer state to localStorage
+function saveTimerState(timer) {
+const key = `timer_${timer.id}`;
+const data = {
+remaining: timer.remaining,
+running: timer.running,
+lastUpdate: Date.now()
+};
+localStorage.setItem(key, JSON.stringify(data));
+}
+
+// Load timers state from localStorage
+function loadTimersState() {
+timers.forEach(timer => {
+const key = `timer_${timer.id}`;
+const saved = localStorage.getItem(key);
+if (saved) {
+try {
+const data = JSON.parse(saved);
+const elapsed = Math.floor((Date.now() - data.lastUpdate) / 1000);
+let rem = data.remaining;
+if (data.running) {
+rem = Math.max(0, rem - elapsed);
+}
+timer.remaining = rem;
+timer.display.textContent = formatTime(rem);
+timer.running = false; // We'll start timer only if running is true below
+timer.btnReset.disabled = rem === timer.duration;
+
+if (rem === 0) {
+timer.btnStartPause.textContent = "Start";
+timer.btnReset.disabled = false;
+} else if (data.running) {
+// Start the timer again with updated remaining time
+timer.btnStartPause.textContent = "Pause";
+timer.btnReset.disabled = false;
+timer.intervalId = setInterval(() => {
+timer.remaining--;
+timer.display.textContent = formatTime(timer.remaining);
+saveTimerState(timer);
+if (timer.remaining <= 0) {
+clearInterval(timer.intervalId);
+timer.running = false;
+timer.btnStartPause.textContent = "Start";
+timer.btnReset.disabled = false;
+saveTimerState(timer);
+alarmSound.play();
+}
+}, 1000);
+timer.running = true;
+} else {
+timer.btnStartPause.textContent = "Start";
+}
+} catch {
+// corrupted data - ignore
+}
+}
+});
+}
+
+// Stopwatch logic
+const swDisplay = document.getElementById('stopwatchDisplay');
+const swStartPauseBtn = document.getElementById('swStartPause');
+const swResetBtn = document.getElementById('swReset');
+
+let swIntervalId = null;
+let swRunning = false;
+let swTime = 0; // in seconds
+
+function formatStopwatch(seconds) {
+const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
+const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+const s = (seconds % 60).toString().padStart(2, '0');
+return `${h}:${m}:${s}`;
+}
+
+function saveStopwatchState() {
+localStorage.setItem('stopwatch', JSON.stringify({
+time: swTime,
+running: swRunning,
+lastUpdate: Date.now()
+}));
+}
+
+function loadStopwatchState() {
+const saved = localStorage.getItem('stopwatch');
+if (saved) {
+try {
+const data = JSON.parse(saved);
+if (data.running) {
+// Calculate elapsed time since last update
+const elapsed = Math.floor((Date.now() - data.lastUpdate) / 1000);
+swTime = data.time + elapsed;
+swRunning = true;
+swDisplay.textContent = formatStopwatch(swTime);
+swStartPauseBtn.textContent = 'Pause';
+swResetBtn.disabled = false;
+swIntervalId = setInterval(() => {
+swTime++;
+swDisplay.textContent = formatStopwatch(swTime);
+saveStopwatchState();
+}, 1000);
+} else {
+swTime = data.time;
+swRunning = false;
+swDisplay.textContent = formatStopwatch(swTime);
+swStartPauseBtn.textContent = 'Start';
+swResetBtn.disabled = swTime === 0;
+}
+} catch {
+// corrupted data - ignore
+}
+}
+}
+
+swStartPauseBtn.onclick = () => {
+if (!swRunning) {
+swIntervalId = setInterval(() => {
+swTime++;
+swDisplay.textContent = formatStopwatch(swTime);
+saveStopwatchState();
+}, 1000);
+swRunning = true;
+swStartPauseBtn.textContent = 'Pause';
+swResetBtn.disabled = false;
+saveStopwatchState();
+} else {
+clearInterval(swIntervalId);
+swRunning = false;
+swStartPauseBtn.textContent = 'Start';
+saveStopwatchState();
+}
+};
+
+swResetBtn.onclick = () => {
+clearInterval(swIntervalId);
+swRunning = false;
+swTime = 0;
+swDisplay.textContent = '00:00:00';
+swStartPauseBtn.textContent = 'Start';
+swResetBtn.disabled = true;
+saveStopwatchState();
+};
+</script>
+
+</body>
+</html>
