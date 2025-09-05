@@ -31,6 +31,7 @@
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
   }
+
   .color-button {
     position: fixed;
     top: 10px;
@@ -47,21 +48,40 @@
   }
   #blueButton { background-color: #1976d2; right: 70px; }
   #pinkButton { background-color: #e91e63; right: 10px; }
-  h1, h3, .instruction-box { text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
 
-  .instruction-box {
-    background: rgba(255,255,255,0.1);
-    border-left: 5px solid lime;
-    padding: 15px;
-    margin: 10px 0 25px;
-    border-radius: 8px;
-    max-width: 600px;
+  #helpButton {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #444;
+    color: white;
+    font-size: 20px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
   }
 
-  .instruction-box img {
-    width: 20px;
-    vertical-align: middle;
-    margin-right: 8px;
+  #instructionBox {
+    display: none;
+    position: fixed;
+    bottom: 70px;
+    right: 20px;
+    background-color: rgba(0,0,0,0.7);
+    padding: 15px;
+    border-radius: 10px;
+    color: lime;
+    font-size: 14px;
+    max-width: 300px;
+    z-index: 999;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  }
+
+  h1, h3 {
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
   }
 
   #uploadLabel {
@@ -91,6 +111,7 @@
     width: 100%;
     display: block;
   }
+
   .delete-button {
     position: absolute;
     top: 5px;
@@ -123,24 +144,35 @@
 </head>
 <body>
 
-<h1 style="color:lime;">Choose files and listen to music (Max 35 minutes per file)</h1>
+<h1 style="color:lime;">Choose files and listen to music your music must be 35 minutes maximum long!</h1>
 <hr>
+<h3 style="color:lime;">Upload your music or video files to listen!</h3>
 
-<!-- Instruction box with icon and link -->
-<div class="instruction-box">
-  <img src="https://cdn-icons-png.flaticon.com/512/25/25307.png" alt="icon">
-  Want to convert YouTube videos to MP3 or MP4?<br>
-  <strong style="color:lime;">Step 1:</strong> Go to the YouTube video you want.<br>
-  <strong style="color:lime;">Step 2:</strong> Copy the video URL from the browser address bar.<br>
-  <strong style="color:lime;">Step 3:</strong> Go to 
-  <a href="https://ezconv.com/" target="_blank" style="color:lime; font-weight:bold;">EZConv</a> and paste the URL.<br>
-  <strong style="color:lime;">Step 4:</strong> Choose MP3 or MP4 and download the file.<br>
-  Then upload it here and enjoy 🎵
+<label for="fileUpload" id="uploadLabel">Choose Music/Video File(s)</label>
+<input id="fileUpload" type="file" multiple accept="audio/*,video/*" />
+
+<div id="playerContainer"></div>
+
+<div id="infoBox">
+  Your music must be 50 MB maximum or it will not work<br>
 </div>
 
-
+<!-- Theme buttons -->
 <button id="blueButton" class="color-button">Blue</button>
 <button id="pinkButton" class="color-button">Pink</button>
+
+<!-- Help icon button -->
+<button id="helpButton" title="How to get music?">?</button>
+
+<!-- Instructions Box -->
+<div id="instructionBox">
+  <strong>How to convert YouTube videos to MP3 or MP4:</strong><br><br>
+  <strong style="color:lime;">1.</strong> Go to the YouTube video you want.<br>
+  <strong style="color:lime;">2.</strong> Copy the video URL from the address bar.<br>
+  <strong style="color:lime;">3.</strong> Go to <a href="https://ezconv.com/" target="_blank" style="color:lime; font-weight:bold;">ezconv.com</a><br>
+  <strong style="color:lime;">4.</strong> Paste the link, choose format (MP3/MP4), and download.<br>
+  <strong style="color:lime;">5.</strong> Upload it here 🎧
+</div>
 
 <script>
   const body = document.body;
@@ -148,8 +180,11 @@
   const pinkButton = document.getElementById("pinkButton");
   const fileUpload = document.getElementById("fileUpload");
   const playerContainer = document.getElementById("playerContainer");
+  const helpButton = document.getElementById("helpButton");
+  const instructionBox = document.getElementById("instructionBox");
   const MAX_SIZE = 50 * 1024 * 1024; // 50 MB
 
+  // IndexedDB Setup
   let db;
   const request = indexedDB.open("MusicDB", 1);
 
@@ -246,6 +281,7 @@
     fileUpload.value = ""; // reset input
   });
 
+  // Theme logic
   window.onload = function () {
     const savedTheme = localStorage.getItem("selectedTheme");
     if (savedTheme) {
@@ -266,6 +302,11 @@
     body.classList.remove("blue-theme");
     body.classList.add("pink-theme");
     localStorage.setItem("selectedTheme", "pink-theme");
+  };
+
+  // Help button toggle
+  helpButton.onclick = () => {
+    instructionBox.style.display = (instructionBox.style.display === "block") ? "none" : "block";
   };
 </script>
 
