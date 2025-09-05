@@ -9,7 +9,6 @@
 <meta http-equiv="X-Frame-Options" content="DENY">
 
 <style>
-  /* Your styles unchanged */
   body {
     margin: 0;
     font-family: Arial, sans-serif;
@@ -65,11 +64,31 @@
   input[type="file"] {
     display: none;
   }
-  audio, video {
-    display: block;
-    margin-bottom: 15px;
-    width: 100%;
+  .media-wrapper {
+    position: relative;
+    margin-bottom: 20px;
     max-width: 400px;
+  }
+  audio, video {
+    width: 100%;
+    display: block;
+  }
+  .delete-button {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #ff1744;
+    border: none;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    opacity: 0.8;
+    transition: opacity 0.3s;
+  }
+  .delete-button:hover {
+    opacity: 1;
   }
   #infoBox {
     position: fixed;
@@ -109,7 +128,6 @@
   const playerContainer = document.getElementById("playerContainer");
   const MAX_SIZE = 50 * 1024 * 1024; // 50 MB
 
-  // IndexedDB setup
   let db;
   const request = indexedDB.open("MusicDB", 1);
 
@@ -129,7 +147,7 @@
     loadFilesFromDB();
   };
 
-  // Load files from IndexedDB and create players
+  // Load all files from DB and create players with delete buttons
   function loadFilesFromDB() {
     playerContainer.innerHTML = "";
     const transaction = db.transaction(["files"], "readonly");
@@ -139,13 +157,17 @@
     requestAll.onsuccess = (e) => {
       const files = e.target.result;
       files.forEach(fileRecord => {
-        createPlayer(URL.createObjectURL(fileRecord.file), fileRecord.file.type);
+        createPlayer(fileRecord.id, URL.createObjectURL(fileRecord.file), fileRecord.file.type);
       });
     };
   }
 
-  // Create player element for audio/video
-  function createPlayer(src, type) {
+  // Create player wrapper with media and delete button
+  function createPlayer(id, src, type) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "media-wrapper";
+    wrapper.dataset.id = id;
+
     let mediaElem;
     if (type.startsWith("video")) {
       mediaElem = document.createElement("video");
@@ -154,9 +176,34 @@
     }
     mediaElem.controls = true;
     mediaElem.src = src;
-    mediaElem.style.marginBottom = "15px";
-    mediaElem.style.maxWidth = "400px";
-    playerContainer.appendChild(mediaElem);
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "Delete";
+    deleteBtn.className = "delete-button";
+    deleteBtn.title = "Delete this file";
+
+    deleteBtn.onclick = () => {
+      deleteFile(id, wrapper);
+    };
+
+    wrapper.appendChild(mediaElem);
+    wrapper.appendChild(deleteBtn);
+    playerContainer.appendChild(wrapper);
+  }
+
+  // Delete file from IndexedDB and remove from DOM
+  function deleteFile(id, wrapper) {
+    const transaction = db.transaction(["files"], "readwrite");
+    const objectStore = transaction.objectStore("files");
+    const requestDelete = objectStore.delete(id);
+
+    requestDelete.onsuccess = () => {
+      wrapper.remove();
+    };
+
+    requestDelete.onerror = () => {
+      alert("Error deleting the file.");
+    };
   }
 
   // Save file to IndexedDB
@@ -166,7 +213,7 @@
     objectStore.add({ file });
   }
 
-  // File input change event handler
+  // Handle file input
   fileUpload.addEventListener("change", () => {
     const files = Array.from(fileUpload.files);
 
@@ -175,14 +222,14 @@
         alert(`File "${file.name}" is larger than 50 MB and will not be saved.`);
         return;
       }
-      createPlayer(URL.createObjectURL(file), file.type);
+      createPlayer(null, URL.createObjectURL(file), file.type);
       saveFileToDB(file);
     });
 
     fileUpload.value = ""; // reset input
   });
 
-  // Theme handling
+  // Theme buttons
   window.onload = function () {
     const savedTheme = localStorage.getItem("selectedTheme");
     if (savedTheme) {
