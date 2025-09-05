@@ -47,7 +47,23 @@
   }
   #blueButton { background-color: #1976d2; right: 70px; }
   #pinkButton { background-color: #e91e63; right: 10px; }
-  h1, h3 { text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
+  h1, h3, .instruction-box { text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
+
+  .instruction-box {
+    background: rgba(255,255,255,0.1);
+    border-left: 5px solid lime;
+    padding: 15px;
+    margin: 10px 0 25px;
+    border-radius: 8px;
+    max-width: 600px;
+  }
+
+  .instruction-box img {
+    width: 20px;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+
   #uploadLabel {
     display: inline-block;
     margin: 20px 0 10px;
@@ -61,9 +77,11 @@
   #uploadLabel:hover {
     background-color: rgba(255,255,255,0.3);
   }
+
   input[type="file"] {
     display: none;
   }
+
   .media-wrapper {
     position: relative;
     margin-bottom: 20px;
@@ -90,6 +108,7 @@
   .delete-button:hover {
     opacity: 1;
   }
+
   #infoBox {
     position: fixed;
     bottom: 10px;
@@ -104,18 +123,21 @@
 </head>
 <body>
 
-<h1 style="color:lime;">Choose files and listen to music your music must be 35 minutes maximum long!</h1>
+<h1 style="color:lime;">Choose files and listen to music (Max 35 minutes per file)</h1>
 <hr>
-<h3 style="color:lime;">Upload your music or video files to listen!</h3>
 
-<label for="fileUpload" id="uploadLabel">Choose Music/Video File(s)</label>
-<input id="fileUpload" type="file" multiple accept="audio/*,video/*" />
-
-<div id="playerContainer"></div>
-
-<div id="infoBox">
-  Your music must be 50 MB maximum or it will not work<br>
+<!-- Instruction box with icon and link -->
+<div class="instruction-box">
+  <img src="https://cdn-icons-png.flaticon.com/512/25/25307.png" alt="icon">
+  Want to convert YouTube videos to MP3 or MP4?<br>
+  <strong style="color:lime;">Step 1:</strong> Go to the YouTube video you want.<br>
+  <strong style="color:lime;">Step 2:</strong> Copy the video URL from the browser address bar.<br>
+  <strong style="color:lime;">Step 3:</strong> Go to 
+  <a href="https://ezconv.com/" target="_blank" style="color:lime; font-weight:bold;">EZConv</a> and paste the URL.<br>
+  <strong style="color:lime;">Step 4:</strong> Choose MP3 or MP4 and download the file.<br>
+  Then upload it here and enjoy 🎵
 </div>
+
 
 <button id="blueButton" class="color-button">Blue</button>
 <button id="pinkButton" class="color-button">Pink</button>
@@ -147,7 +169,6 @@
     loadFilesFromDB();
   };
 
-  // Load all files from DB and create players with delete buttons
   function loadFilesFromDB() {
     playerContainer.innerHTML = "";
     const transaction = db.transaction(["files"], "readonly");
@@ -162,7 +183,6 @@
     };
   }
 
-  // Create player wrapper with media and delete button
   function createPlayer(id, src, type) {
     const wrapper = document.createElement("div");
     wrapper.className = "media-wrapper";
@@ -191,7 +211,6 @@
     playerContainer.appendChild(wrapper);
   }
 
-  // Delete file from IndexedDB and remove from DOM
   function deleteFile(id, wrapper) {
     const transaction = db.transaction(["files"], "readwrite");
     const objectStore = transaction.objectStore("files");
@@ -206,14 +225,12 @@
     };
   }
 
-  // Save file to IndexedDB
   function saveFileToDB(file) {
     const transaction = db.transaction(["files"], "readwrite");
     const objectStore = transaction.objectStore("files");
     objectStore.add({ file });
   }
 
-  // Handle file input
   fileUpload.addEventListener("change", () => {
     const files = Array.from(fileUpload.files);
 
@@ -229,7 +246,6 @@
     fileUpload.value = ""; // reset input
   });
 
-  // Theme buttons
   window.onload = function () {
     const savedTheme = localStorage.getItem("selectedTheme");
     if (savedTheme) {
