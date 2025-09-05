@@ -1,112 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Musics</title>
-<link rel="icon" type="image/png" href="MUSIC.png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Musics</title>
+  <link rel="icon" type="image/png" href="MUSIC.png">
   <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'none';">
-<meta http-equiv="X-Frame-Options" content="DENY">
+  <meta http-equiv="X-Frame-Options" content="DENY">
 
-<style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  min-height: 100vh;
-  padding: 20px;
-  overflow: hidden;
-}
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+      padding: 20px;
+      overflow-x: hidden;
+    }
 
-/* Animated gradient backgrounds */
-body.blue-theme {
-  background: linear-gradient(-45deg, #2196f3, #00bcd4, #1a237e, #0d47a1);
-  background-size: 400% 400%;
-  animation: gradientMove 20s ease infinite;
-  color: white;
-}
+    body.blue-theme {
+      background: linear-gradient(-45deg, #2196f3, #00bcd4, #1a237e, #0d47a1);
+      background-size: 400% 400%;
+      animation: gradientMove 20s ease infinite;
+      color: white;
+    }
 
-body.pink-theme {
-  background: linear-gradient(-45deg, #ff4081, #f50057, #ec407a, #f06292);
-  background-size: 400% 400%;
-  animation: gradientMove 20s ease infinite;
-  color: white;
-}
+    body.pink-theme {
+      background: linear-gradient(-45deg, #ff4081, #f50057, #ec407a, #f06292);
+      background-size: 400% 400%;
+      animation: gradientMove 20s ease infinite;
+      color: white;
+    }
 
-@keyframes gradientMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
-.color-button {
-  position: fixed;
-  top: 10px;
-  height: 40px;
-  cursor: pointer;
-  z-index: 1000;
-  padding: 0 12px;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-  color: white;
-  font-weight: bold;
-}
+    h1, h3 {
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+    }
 
-#blueButton { background-color: #1976d2; right: 70px; }
-#pinkButton { background-color: #e91e63; right: 10px; }
+    audio {
+      display: block;
+      margin-top: 10px;
+      max-width: 100%;
+    }
 
-h1, h3 { text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
+    .color-button {
+      position: fixed;
+      top: 10px;
+      height: 40px;
+      cursor: pointer;
+      z-index: 1000;
+      padding: 0 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      color: white;
+      font-weight: bold;
+    }
 
-audio {
-  display: block;
-  margin-bottom: 15px;
-  width: 100%;
-  max-width: 400px;
-}
-</style>
+    #blueButton { background-color: #1976d2; right: 70px; }
+    #pinkButton { background-color: #e91e63; right: 10px; }
+
+    input[type="file"] {
+      margin-top: 10px;
+    }
+
+    #fileName {
+      margin-top: 10px;
+      font-style: italic;
+    }
+
+    #errorMsg {
+      color: red;
+      margin-top: 10px;
+    }
+
+    .corner-message {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      font-size: 13px;
+      background: rgba(0,0,0,0.4);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      z-index: 999;
+      font-style: italic;
+    }
+  </style>
 </head>
 <body>
 
-<h1 style="color:lime;">Listen To Relaxing Musics!</h1>
-<hr>
-<h3 style="color:lime;">Relaxing Musics 🎵</h3>
+  <h1 style="color:lime;">🎶 Relaxing Music</h1>
 
-<audio src="relaxing1.mp3" controls></audio>
-<audio src="relaxing2.mp3" controls></audio>
-<audio src="relaxing3.mp3" controls></audio>
+  <!-- Built-in demo relaxing tracks -->
+  <h3>Built-in Relaxing Tracks</h3>
+  <audio src="relaxing1.mp3" controls></audio>
+  <audio src="relaxing2.mp3" controls></audio>
 
-<button id="blueButton" class="color-button">Blue</button>
-<button id="pinkButton" class="color-button">Pink</button>
+  <!-- Upload section -->
+  <h3 style="margin-top:30px;">Upload Your Music (Max 50MB per file)</h3>
+  <input type="file" accept="audio/*" id="musicUpload" multiple />
+  <p id="fileName"></p>
+  <p id="errorMsg"></p>
+  <audio id="musicPlayer" controls></audio>
 
-<script>
-const body = document.body;
-const blueButton = document.getElementById("blueButton");
-const pinkButton = document.getElementById("pinkButton");
+  <!-- Theme Switch Buttons -->
+  <button id="blueButton" class="color-button">Blue</button>
+  <button id="pinkButton" class="color-button">Pink</button>
 
-// Apply saved theme on load
-window.onload = function () {
-  const savedTheme = localStorage.getItem("selectedTheme");
-  if (savedTheme) {
-    body.classList.remove("blue-theme", "pink-theme");
-    body.classList.add(savedTheme);
-  } else {
-    body.classList.add("blue-theme");
-  }
-};
+  <!-- Corner Message -->
+  <div class="corner-message">
+    Your music will be saved if it's less than 50MB and it will not be saved if it's more than 50MB.
+  </div>
 
-blueButton.onclick = function () {
-  body.classList.remove("pink-theme");
-  body.classList.add("blue-theme");
-  localStorage.setItem("selectedTheme", "blue-theme");
-};
+  <script>
+    const MAX_FILE_SIZE_MB = 50;
 
-pinkButton.onclick = function () {
-  body.classList.remove("blue-theme");
-  body.classList.add("pink-theme");
-  localStorage.setItem("selectedTheme", "pink-theme");
-};
-</script>
+    const body = document.body;
+    const blueButton = document.getElementById("blueButton");
+    const pinkButton = document.getElementById("pinkButton");
+    const musicUpload = document.getElementById("musicUpload");
+    const musicPlayer = document.getElementById("musicPlayer");
+    const fileNameDisplay = document.getElementById("fileName");
+    const errorMsg = document.getElementById("errorMsg");
+
+    // Load saved theme
+    window.onload = function () {
+      const savedTheme = localStorage.getItem("selectedTheme");
+      if (savedTheme) {
+        body.classList.add(savedTheme);
+      } else {
+        body.classList.add("blue-theme");
+      }
+    };
+
+    blueButton.onclick = function () {
+      body.classList.remove("pink-theme");
+      body.classList.add("blue-theme");
+      localStorage.setItem("selectedTheme", "blue-theme");
+    };
+
+    pinkButton.onclick = function () {
+      body.classList.remove("blue-theme");
+      body.classList.add("pink-theme");
+      localStorage.setItem("selectedTheme", "pink-theme");
+    };
+
+    // Upload and play music
+    musicUpload.addEventListener("change", function () {
+      const files = this.files;
+      if (!files || files.length === 0) return;
+
+      // We'll just play the first valid file
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const fileSizeMB = file.size / (1024 * 1024);
+
+        if (fileSizeMB > MAX_FILE_SIZE_MB) {
+          errorMsg.textContent = `❌ "${file.name}" is too large. Please select a file under 50MB.`;
+          continue;
+        }
+
+        errorMsg.textContent = ""; // Clear previous errors
+        const url = URL.createObjectURL(file);
+        musicPlayer.src = url;
+        musicPlayer.play();
+        fileNameDisplay.textContent = "Now Playing: " + file.name;
+        break; // Only play the first valid file
+      }
+    });
+  </script>
 
 </body>
 </html>
