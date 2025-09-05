@@ -9,86 +9,78 @@
 <meta http-equiv="X-Frame-Options" content="DENY">
 
 <style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  min-height: 100vh;
-  padding: 20px;
-  overflow: hidden;
-  background: linear-gradient(-45deg, #2196f3, #00bcd4, #1a237e, #0d47a1);
-  background-size: 400% 400%;
-  animation: gradientMove 20s ease infinite;
-  color: white;
-}
-
-body.pink-theme {
-  background: linear-gradient(-45deg, #ff4081, #f50057, #ec407a, #f06292);
-  background-size: 400% 400%;
-  animation: gradientMove 20s ease infinite;
-  color: white;
-}
-
-@keyframes gradientMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-.color-button {
-  position: fixed;
-  top: 10px;
-  height: 40px;
-  cursor: pointer;
-  z-index: 1000;
-  padding: 0 12px;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-  color: white;
-  font-weight: bold;
-}
-
-#blueButton { background-color: #1976d2; right: 70px; }
-#pinkButton { background-color: #e91e63; right: 10px; }
-
-h1, h3 { text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
-
-#uploadLabel {
-  display: inline-block;
-  margin: 20px 0 10px;
-  padding: 10px 20px;
-  background-color: rgba(255,255,255,0.1);
-  border-radius: 6px;
-  cursor: pointer;
-  user-select: none;
-  transition: background-color 0.3s;
-}
-#uploadLabel:hover {
-  background-color: rgba(255,255,255,0.3);
-}
-
-input[type="file"] {
-  display: none;
-}
-
-audio, video {
-  display: block;
-  margin-bottom: 15px;
-  width: 100%;
-  max-width: 400px;
-}
-
-#infoBox {
-  position: fixed;
-  bottom: 10px;
-  left: 10px;
-  font-size: 14px;
-  color: lime;
-  text-shadow: 1px 1px 2px black;
-  max-width: 320px;
-  z-index: 1000;
-}
+  /* Your styles unchanged */
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    padding: 20px;
+    overflow: hidden;
+    background: linear-gradient(-45deg, #2196f3, #00bcd4, #1a237e, #0d47a1);
+    background-size: 400% 400%;
+    animation: gradientMove 20s ease infinite;
+    color: white;
+  }
+  body.pink-theme {
+    background: linear-gradient(-45deg, #ff4081, #f50057, #ec407a, #f06292);
+    background-size: 400% 400%;
+    animation: gradientMove 20s ease infinite;
+    color: white;
+  }
+  @keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  .color-button {
+    position: fixed;
+    top: 10px;
+    height: 40px;
+    cursor: pointer;
+    z-index: 1000;
+    padding: 0 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    color: white;
+    font-weight: bold;
+  }
+  #blueButton { background-color: #1976d2; right: 70px; }
+  #pinkButton { background-color: #e91e63; right: 10px; }
+  h1, h3 { text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
+  #uploadLabel {
+    display: inline-block;
+    margin: 20px 0 10px;
+    padding: 10px 20px;
+    background-color: rgba(255,255,255,0.1);
+    border-radius: 6px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.3s;
+  }
+  #uploadLabel:hover {
+    background-color: rgba(255,255,255,0.3);
+  }
+  input[type="file"] {
+    display: none;
+  }
+  audio, video {
+    display: block;
+    margin-bottom: 15px;
+    width: 100%;
+    max-width: 400px;
+  }
+  #infoBox {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    font-size: 14px;
+    color: lime;
+    text-shadow: 1px 1px 2px black;
+    max-width: 320px;
+    z-index: 1000;
+  }
 </style>
 </head>
 <body>
@@ -110,90 +102,108 @@ audio, video {
 <button id="pinkButton" class="color-button">Pink</button>
 
 <script>
-const body = document.body;
-const blueButton = document.getElementById("blueButton");
-const pinkButton = document.getElementById("pinkButton");
-const fileUpload = document.getElementById("fileUpload");
-const playerContainer = document.getElementById("playerContainer");
-const MAX_SIZE = 50 * 1024 * 1024; // 50 MB in bytes
+  const body = document.body;
+  const blueButton = document.getElementById("blueButton");
+  const pinkButton = document.getElementById("pinkButton");
+  const fileUpload = document.getElementById("fileUpload");
+  const playerContainer = document.getElementById("playerContainer");
+  const MAX_SIZE = 50 * 1024 * 1024; // 50 MB
 
-// Load theme on page load
-window.onload = function () {
-  const savedTheme = localStorage.getItem("selectedTheme");
-  if (savedTheme) {
-    body.classList.remove("blue-theme", "pink-theme");
-    body.classList.add(savedTheme);
-  } else {
-    body.classList.add("blue-theme");
-  }
+  // IndexedDB setup
+  let db;
+  const request = indexedDB.open("MusicDB", 1);
 
-  loadSavedFiles();
-};
+  request.onerror = (event) => {
+    console.error("IndexedDB error:", event.target.errorCode);
+  };
 
-// Theme buttons
-blueButton.onclick = function () {
-  body.classList.remove("pink-theme");
-  body.classList.add("blue-theme");
-  localStorage.setItem("selectedTheme", "blue-theme");
-};
-
-pinkButton.onclick = function () {
-  body.classList.remove("blue-theme");
-  body.classList.add("pink-theme");
-  localStorage.setItem("selectedTheme", "pink-theme");
-};
-
-// Load saved files from localStorage and show them
-function loadSavedFiles() {
-  const savedFiles = JSON.parse(localStorage.getItem("musicFiles") || "[]");
-  playerContainer.innerHTML = "";
-  savedFiles.forEach(fileData => {
-    createPlayer(fileData.url, fileData.type);
-  });
-}
-
-// Create audio or video player depending on file type
-function createPlayer(url, type) {
-  let mediaElem;
-  if (type.startsWith("video")) {
-    mediaElem = document.createElement("video");
-  } else {
-    mediaElem = document.createElement("audio");
-  }
-  mediaElem.controls = true;
-  mediaElem.src = url;
-  mediaElem.style.marginBottom = "15px";
-  mediaElem.style.maxWidth = "400px";
-  playerContainer.appendChild(mediaElem);
-}
-
-// Handle file input change event
-fileUpload.addEventListener("change", () => {
-  const files = Array.from(fileUpload.files);
-  const validFiles = [];
-
-  files.forEach(file => {
-    if (file.size > MAX_SIZE) {
-      alert(`File "${file.name}" is larger than 50 MB and will not be saved.`);
-      return;
+  request.onupgradeneeded = (event) => {
+    db = event.target.result;
+    if (!db.objectStoreNames.contains("files")) {
+      db.createObjectStore("files", { keyPath: "id", autoIncrement: true });
     }
+  };
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      // Save in localStorage (URL and MIME type)
-      const savedFiles = JSON.parse(localStorage.getItem("musicFiles") || "[]");
-      savedFiles.push({ url: e.target.result, type: file.type });
-      localStorage.setItem("musicFiles", JSON.stringify(savedFiles));
+  request.onsuccess = (event) => {
+    db = event.target.result;
+    loadFilesFromDB();
+  };
 
-      // Create media player for this file
-      createPlayer(e.target.result, file.type);
+  // Load files from IndexedDB and create players
+  function loadFilesFromDB() {
+    playerContainer.innerHTML = "";
+    const transaction = db.transaction(["files"], "readonly");
+    const objectStore = transaction.objectStore("files");
+    const requestAll = objectStore.getAll();
+
+    requestAll.onsuccess = (e) => {
+      const files = e.target.result;
+      files.forEach(fileRecord => {
+        createPlayer(URL.createObjectURL(fileRecord.file), fileRecord.file.type);
+      });
     };
-    reader.readAsDataURL(file);
+  }
+
+  // Create player element for audio/video
+  function createPlayer(src, type) {
+    let mediaElem;
+    if (type.startsWith("video")) {
+      mediaElem = document.createElement("video");
+    } else {
+      mediaElem = document.createElement("audio");
+    }
+    mediaElem.controls = true;
+    mediaElem.src = src;
+    mediaElem.style.marginBottom = "15px";
+    mediaElem.style.maxWidth = "400px";
+    playerContainer.appendChild(mediaElem);
+  }
+
+  // Save file to IndexedDB
+  function saveFileToDB(file) {
+    const transaction = db.transaction(["files"], "readwrite");
+    const objectStore = transaction.objectStore("files");
+    objectStore.add({ file });
+  }
+
+  // File input change event handler
+  fileUpload.addEventListener("change", () => {
+    const files = Array.from(fileUpload.files);
+
+    files.forEach(file => {
+      if (file.size > MAX_SIZE) {
+        alert(`File "${file.name}" is larger than 50 MB and will not be saved.`);
+        return;
+      }
+      createPlayer(URL.createObjectURL(file), file.type);
+      saveFileToDB(file);
+    });
+
+    fileUpload.value = ""; // reset input
   });
 
-  // Clear the input so same file can be uploaded again if needed
-  fileUpload.value = "";
-});
+  // Theme handling
+  window.onload = function () {
+    const savedTheme = localStorage.getItem("selectedTheme");
+    if (savedTheme) {
+      body.classList.remove("blue-theme", "pink-theme");
+      body.classList.add(savedTheme);
+    } else {
+      body.classList.add("blue-theme");
+    }
+  };
+
+  blueButton.onclick = function () {
+    body.classList.remove("pink-theme");
+    body.classList.add("blue-theme");
+    localStorage.setItem("selectedTheme", "blue-theme");
+  };
+
+  pinkButton.onclick = function () {
+    body.classList.remove("blue-theme");
+    body.classList.add("pink-theme");
+    localStorage.setItem("selectedTheme", "pink-theme");
+  };
 </script>
 
 </body>
