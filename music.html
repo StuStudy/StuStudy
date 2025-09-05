@@ -1,180 +1,200 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Musics</title>
-  <link rel="icon" type="image/png" href="MUSIC.png">
-  <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'none';">
-  <meta http-equiv="X-Frame-Options" content="DENY">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Relaxing Music</title>
+<link rel="icon" type="image/png" href="MUSIC.png">
+<meta http-equiv="Content-Security-Policy" content="frame-ancestors 'none';">
+<meta http-equiv="X-Frame-Options" content="DENY">
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      min-height: 100vh;
-      padding: 20px;
-      overflow-x: hidden;
-    }
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  padding: 20px;
+  overflow: hidden;
+  background: linear-gradient(-45deg, #2196f3, #00bcd4, #1a237e, #0d47a1);
+  background-size: 400% 400%;
+  animation: gradientMove 20s ease infinite;
+  color: white;
+}
 
-    body.blue-theme {
-      background: linear-gradient(-45deg, #2196f3, #00bcd4, #1a237e, #0d47a1);
-      background-size: 400% 400%;
-      animation: gradientMove 20s ease infinite;
-      color: white;
-    }
+body.pink-theme {
+  background: linear-gradient(-45deg, #ff4081, #f50057, #ec407a, #f06292);
+  background-size: 400% 400%;
+  animation: gradientMove 20s ease infinite;
+  color: white;
+}
 
-    body.pink-theme {
-      background: linear-gradient(-45deg, #ff4081, #f50057, #ec407a, #f06292);
-      background-size: 400% 400%;
-      animation: gradientMove 20s ease infinite;
-      color: white;
-    }
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
 
-    @keyframes gradientMove {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
+.color-button {
+  position: fixed;
+  top: 10px;
+  height: 40px;
+  cursor: pointer;
+  z-index: 1000;
+  padding: 0 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  color: white;
+  font-weight: bold;
+}
 
-    h1, h3 {
-      text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
-    }
+#blueButton { background-color: #1976d2; right: 70px; }
+#pinkButton { background-color: #e91e63; right: 10px; }
 
-    audio {
-      display: block;
-      margin-top: 10px;
-      max-width: 100%;
-    }
+h1, h3 { text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
 
-    .color-button {
-      position: fixed;
-      top: 10px;
-      height: 40px;
-      cursor: pointer;
-      z-index: 1000;
-      padding: 0 12px;
-      border: none;
-      border-radius: 6px;
-      font-size: 14px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-      color: white;
-      font-weight: bold;
-    }
+#uploadLabel {
+  display: inline-block;
+  margin: 20px 0 10px;
+  padding: 10px 20px;
+  background-color: rgba(255,255,255,0.1);
+  border-radius: 6px;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.3s;
+}
+#uploadLabel:hover {
+  background-color: rgba(255,255,255,0.3);
+}
 
-    #blueButton { background-color: #1976d2; right: 70px; }
-    #pinkButton { background-color: #e91e63; right: 10px; }
+input[type="file"] {
+  display: none;
+}
 
-    input[type="file"] {
-      margin-top: 10px;
-    }
+audio, video {
+  display: block;
+  margin-bottom: 15px;
+  width: 100%;
+  max-width: 400px;
+}
 
-    #fileName {
-      margin-top: 10px;
-      font-style: italic;
-    }
-
-    #errorMsg {
-      color: red;
-      margin-top: 10px;
-    }
-
-    .corner-message {
-      position: fixed;
-      bottom: 10px;
-      left: 10px;
-      font-size: 13px;
-      background: rgba(0,0,0,0.4);
-      color: white;
-      padding: 8px 12px;
-      border-radius: 6px;
-      z-index: 999;
-      font-style: italic;
-    }
-  </style>
+#infoBox {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  font-size: 14px;
+  color: lime;
+  text-shadow: 1px 1px 2px black;
+  max-width: 320px;
+  z-index: 1000;
+}
+</style>
 </head>
 <body>
 
-  <h1 style="color:lime;">🎶 Relaxing Music</h1>
+<h1 style="color:lime;">Choose files and listen to music your music must be 35 minutes maximum long!</h1>
+<hr>
+<h3 style="color:lime;">Upload your music or video files to listen!</h3>
 
-  <!-- Built-in demo relaxing tracks -->
-  <h3>Built-in Relaxing Tracks</h3>
-  <audio src="relaxing1.mp3" controls></audio>
-  <audio src="relaxing2.mp3" controls></audio>
+<label for="fileUpload" id="uploadLabel">Choose Music/Video File(s)</label>
+<input id="fileUpload" type="file" multiple accept="audio/*,video/*" />
 
-  <!-- Upload section -->
-  <h3 style="margin-top:30px;">Upload Your Music (Max 50MB per file)</h3>
-  <input type="file" accept="audio/*" id="musicUpload" multiple />
-  <p id="fileName"></p>
-  <p id="errorMsg"></p>
-  <audio id="musicPlayer" controls></audio>
+<div id="playerContainer"></div>
 
-  <!-- Theme Switch Buttons -->
-  <button id="blueButton" class="color-button">Blue</button>
-  <button id="pinkButton" class="color-button">Pink</button>
+<div id="infoBox">
+  Your music must be 50 MB maximum or it will not work<br>
+</div>
 
-  <!-- Corner Message -->
-  <div class="corner-message">
-    Your music will be saved if it's less than 50MB and it will not be saved if it's more than 50MB.
-  </div>
+<button id="blueButton" class="color-button">Blue</button>
+<button id="pinkButton" class="color-button">Pink</button>
 
-  <script>
-    const MAX_FILE_SIZE_MB = 50;
+<script>
+const body = document.body;
+const blueButton = document.getElementById("blueButton");
+const pinkButton = document.getElementById("pinkButton");
+const fileUpload = document.getElementById("fileUpload");
+const playerContainer = document.getElementById("playerContainer");
+const MAX_SIZE = 50 * 1024 * 1024; // 50 MB in bytes
 
-    const body = document.body;
-    const blueButton = document.getElementById("blueButton");
-    const pinkButton = document.getElementById("pinkButton");
-    const musicUpload = document.getElementById("musicUpload");
-    const musicPlayer = document.getElementById("musicPlayer");
-    const fileNameDisplay = document.getElementById("fileName");
-    const errorMsg = document.getElementById("errorMsg");
+// Load theme on page load
+window.onload = function () {
+  const savedTheme = localStorage.getItem("selectedTheme");
+  if (savedTheme) {
+    body.classList.remove("blue-theme", "pink-theme");
+    body.classList.add(savedTheme);
+  } else {
+    body.classList.add("blue-theme");
+  }
 
-    // Load saved theme
-    window.onload = function () {
-      const savedTheme = localStorage.getItem("selectedTheme");
-      if (savedTheme) {
-        body.classList.add(savedTheme);
-      } else {
-        body.classList.add("blue-theme");
-      }
+  loadSavedFiles();
+};
+
+// Theme buttons
+blueButton.onclick = function () {
+  body.classList.remove("pink-theme");
+  body.classList.add("blue-theme");
+  localStorage.setItem("selectedTheme", "blue-theme");
+};
+
+pinkButton.onclick = function () {
+  body.classList.remove("blue-theme");
+  body.classList.add("pink-theme");
+  localStorage.setItem("selectedTheme", "pink-theme");
+};
+
+// Load saved files from localStorage and show them
+function loadSavedFiles() {
+  const savedFiles = JSON.parse(localStorage.getItem("musicFiles") || "[]");
+  playerContainer.innerHTML = "";
+  savedFiles.forEach(fileData => {
+    createPlayer(fileData.url, fileData.type);
+  });
+}
+
+// Create audio or video player depending on file type
+function createPlayer(url, type) {
+  let mediaElem;
+  if (type.startsWith("video")) {
+    mediaElem = document.createElement("video");
+  } else {
+    mediaElem = document.createElement("audio");
+  }
+  mediaElem.controls = true;
+  mediaElem.src = url;
+  mediaElem.style.marginBottom = "15px";
+  mediaElem.style.maxWidth = "400px";
+  playerContainer.appendChild(mediaElem);
+}
+
+// Handle file input change event
+fileUpload.addEventListener("change", () => {
+  const files = Array.from(fileUpload.files);
+  const validFiles = [];
+
+  files.forEach(file => {
+    if (file.size > MAX_SIZE) {
+      alert(`File "${file.name}" is larger than 50 MB and will not be saved.`);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      // Save in localStorage (URL and MIME type)
+      const savedFiles = JSON.parse(localStorage.getItem("musicFiles") || "[]");
+      savedFiles.push({ url: e.target.result, type: file.type });
+      localStorage.setItem("musicFiles", JSON.stringify(savedFiles));
+
+      // Create media player for this file
+      createPlayer(e.target.result, file.type);
     };
+    reader.readAsDataURL(file);
+  });
 
-    blueButton.onclick = function () {
-      body.classList.remove("pink-theme");
-      body.classList.add("blue-theme");
-      localStorage.setItem("selectedTheme", "blue-theme");
-    };
-
-    pinkButton.onclick = function () {
-      body.classList.remove("blue-theme");
-      body.classList.add("pink-theme");
-      localStorage.setItem("selectedTheme", "pink-theme");
-    };
-
-    // Upload and play music
-    musicUpload.addEventListener("change", function () {
-      const files = this.files;
-      if (!files || files.length === 0) return;
-
-      // We'll just play the first valid file
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const fileSizeMB = file.size / (1024 * 1024);
-
-        if (fileSizeMB > MAX_FILE_SIZE_MB) {
-          errorMsg.textContent = `❌ "${file.name}" is too large. Please select a file under 50MB.`;
-          continue;
-        }
-
-        errorMsg.textContent = ""; // Clear previous errors
-        const url = URL.createObjectURL(file);
-        musicPlayer.src = url;
-        musicPlayer.play();
-        fileNameDisplay.textContent = "Now Playing: " + file.name;
-        break; // Only play the first valid file
-      }
-    });
-  </script>
+  // Clear the input so same file can be uploaded again if needed
+  fileUpload.value = "";
+});
+</script>
 
 </body>
 </html>
