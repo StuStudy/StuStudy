@@ -1,216 +1,387 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Daily List</title>
-<link rel="icon" type="image/png" href="LIST.png">
-  <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'none';">
-<meta http-equiv="X-Frame-Options" content="DENY">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Planner</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-<style>
-* {
-margin: 0;
-padding: 0;
-box-sizing: border-box;
-}
+    body {
+      font-family: Arial, sans-serif;
+      background-size: 400% 400%;
+      animation: gradientMove 20s ease infinite;
+      color: #fff;
+      min-height: 100vh;
+      padding: 20px;
+      transition: background 0.5s ease;
+    }
 
-body {
-height: 100vh;
-font-family: Arial, sans-serif;
-background-size: 400% 400%;
-animation: gradientMove 20s ease infinite;
-display: flex;
-flex-direction: column;
-align-items: center;
-padding: 20px;
-transition: background 0.5s ease;
-}
+    body.blue-theme {
+      background: linear-gradient(-45deg, #2196f3, #00bcd4, #1a237e, #0d47a1);
+    }
 
-body.blue-theme {
-background: linear-gradient(-45deg, #2196f3, #00bcd4, #1a237e, #0d47a1);
-}
+    body.pink-theme {
+      background: linear-gradient(-45deg, #ff4081, #f50057, #ec407a, #f06292);
+    }
 
-body.pink-theme {
-background: linear-gradient(-45deg, #ff4081, #f50057, #ec407a, #f06292);
-}
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
-@keyframes gradientMove {
-0% { background-position: 0% 50%; }
-50% { background-position: 100% 50%; }
-100% { background-position: 0% 50%; }
-}
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 6px rgba(0,0,0,0.4);
+    }
 
-h1 {
-color: white;
-margin-bottom: 20px;
-text-shadow: 2px 2px 5px rgba(0,0,0,0.4);
-}
+    .section {
+      margin-bottom: 40px;
+      background: rgba(255,255,255,0.1);
+      padding: 20px;
+      border-radius: 10px;
+      backdrop-filter: blur(5px);
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
 
-.color-button {
-position: fixed;
-top: 10px;
-height: 40px;
-padding: 0 15px;
-border: none;
-border-radius: 8px;
-font-size: 16px;
-color: white;
-font-weight: bold;
-cursor: pointer;
-z-index: 999;
-}
+    .section h2 {
+      margin-bottom: 15px;
+      border-bottom: 1px solid rgba(255,255,255,0.3);
+      padding-bottom: 5px;
+    }
 
-#blueButton {
-right: 80px;
-background-color: #1976d2;
-}
+    .color-button {
+      position: fixed;
+      top: 10px;
+      height: 40px;
+      padding: 0 15px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 999;
+    }
 
-#pinkButton {
-right: 10px;
-background-color: #e91e63;
-}
+    #blueButton {
+      right: 80px;
+      background-color: #1976d2;
+    }
 
-.table-container {
-max-height: 70vh;
-overflow-y: auto;
-border-radius: 10px;
-padding: 20px;
-background: rgba(0, 0, 0, 0.4);
-backdrop-filter: blur(6px);
-width: 90vw;
-max-width: 1000px;
-box-shadow: 0 0 15px rgba(0,0,0,0.4);
-}
+    #pinkButton {
+      right: 10px;
+      background-color: #e91e63;
+    }
 
-table {
-width: 100%;
-border-collapse: collapse;
-}
+    .checklist-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
 
-th, td {
-padding: 10px;
-border: 1px solid #aaa;
-text-align: center;
-color: white;
-}
+    .checklist-item input[type="checkbox"] {
+      margin-right: 10px;
+      transform: scale(1.2);
+    }
 
-th {
-background: rgba(255, 255, 255, 0.1);
-font-size: 1.1rem;
-}
+    .checklist-item input[type="text"] {
+      flex: 1;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid #ccc;
+      color: #fff;
+      font-size: 1rem;
+      outline: none;
+    }
 
-td {
-background: rgba(255, 255, 255, 0.05);
-}
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+    }
 
-td:hover {
-background: rgba(255, 255, 255, 0.15);
-}
+    .calendar-cell {
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 10px;
+      min-height: 80px;
+      border-radius: 6px;
+      background: rgba(0,0,0,0.2);
+      position: relative;
+      cursor: pointer;
+    }
 
-input[type="text"] {
-width: 100%;
-background: transparent;
-border: none;
-color: white;
-font-size: 1rem;
-text-align: center;
-outline: none;
-}
+    .calendar-cell:hover {
+      background: rgba(255,255,255,0.1);
+    }
 
-input:focus {
-background-color: rgba(255,255,255,0.1);
-border: 1px solid white;
-border-radius: 5px;
-}
+    .calendar-cell .date {
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
 
-::-webkit-scrollbar {
-width: 8px;
-}
+    .event {
+      font-size: 0.8rem;
+      margin-top: 5px;
+      background: #fff2;
+      padding: 2px 5px;
+      border-radius: 4px;
+    }
 
-::-webkit-scrollbar-thumb {
-background: rgba(255,255,255,0.2);
-border-radius: 10px;
-}
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
 
-::-webkit-scrollbar-thumb:hover {
-background: rgba(255,255,255,0.4);
-}
-</style>
+    th, td {
+      padding: 8px;
+      border: 1px solid rgba(255,255,255,0.2);
+      text-align: center;
+    }
+
+    input[type="text"].routine {
+      background: transparent;
+      border: none;
+      color: white;
+      width: 100%;
+      outline: none;
+    }
+
+    .modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #1a1a2e;
+      padding: 20px;
+      border-radius: 10px;
+      display: none;
+      z-index: 999;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    .modal input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 5px;
+    }
+
+    .modal button {
+      margin-top: 10px;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 5px;
+      background: #2196f3;
+      color: white;
+      cursor: pointer;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      z-index: 998;
+      display: none;
+    }
+  </style>
 </head>
 <body>
-<button id="blueButton" class="color-button">Blue</button>
-<button id="pinkButton" class="color-button">Pink</button>
+  <button id="blueButton" class="color-button">Blue</button>
+  <button id="pinkButton" class="color-button">Pink</button>
 
-<h1>Daily Activity List</h1>
+  <h1>📚 Student Productivity Dashboard</h1>
 
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>Activity</th>
-<th>Time</th>
-<th>Duration</th>
-</tr>
-</thead>
-<tbody id="table-body"></tbody>
-</table>
-</div>
+  <!-- Top 20 Checklist -->
+  <div class="section">
+    <h2>📝 Top 20 Things To Do</h2>
+    <div id="checklist"></div>
+  </div>
 
-<script>
-const tbody = document.getElementById('table-body');
-const blueBtn = document.getElementById("blueButton");
-const pinkBtn = document.getElementById("pinkButton");
-const body = document.body;
+  <!-- Calendar -->
+  <div class="section">
+    <h2>📅 Calendar</h2>
+    <div class="calendar-grid" id="calendar"></div>
+  </div>
 
-const NUM_ROWS = 100;
+  <!-- Routine -->
+  <div class="section">
+    <h2>📘 Daily Routine (Custom Time)</h2>
+    <table id="routine-table">
+      <thead>
+        <tr><th>Time</th><th>Task</th><th>Done</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
-let savedTheme = localStorage.getItem("selectedTheme");
-if (savedTheme) {
-body.classList.add(savedTheme);
-} else {
-body.classList.add("blue-theme");
-}
+  <!-- Modal for calendar events -->
+  <div class="overlay" id="overlay"></div>
+  <div class="modal" id="modal">
+    <h3>Add Event</h3>
+    <input type="text" id="eventInput" placeholder="e.g. John's Birthday">
+    <button onclick="saveEvent()">Save</button>
+  </div>
 
-blueBtn.onclick = () => {
-body.classList.remove("pink-theme");
-body.classList.add("blue-theme");
-localStorage.setItem("selectedTheme", "blue-theme");
-};
+  <script>
+    // Theme logic
+    const body = document.body;
+    const blueBtn = document.getElementById("blueButton");
+    const pinkBtn = document.getElementById("pinkButton");
 
-pinkBtn.onclick = () => {
-body.classList.remove("blue-theme");
-body.classList.add("pink-theme");
-localStorage.setItem("selectedTheme", "pink-theme");
-};
+    const savedTheme = localStorage.getItem("selectedTheme");
+    if (savedTheme) {
+      body.classList.add(savedTheme);
+    } else {
+      body.classList.add("blue-theme");
+    }
 
-let savedData = JSON.parse(localStorage.getItem("tableData")) || Array(NUM_ROWS).fill().map(() => ["", "", ""]);
+    blueBtn.onclick = () => {
+      body.classList.remove("pink-theme");
+      body.classList.add("blue-theme");
+      localStorage.setItem("selectedTheme", "blue-theme");
+    };
 
-function renderTable(data) {
-tbody.innerHTML = "";
-for (let i = 0; i < data.length; i++) {
-const row = document.createElement("tr");
+    pinkBtn.onclick = () => {
+      body.classList.remove("blue-theme");
+      body.classList.add("pink-theme");
+      localStorage.setItem("selectedTheme", "pink-theme");
+    };
 
-for (let j = 0; j < 3; j++) {
-const cell = document.createElement("td");
-const input = document.createElement("input");
-input.type = "text";
-input.value = data[i][j];
-input.placeholder = `Row ${i+1}, Col ${j+1}`;
-input.addEventListener("input", () => {
-savedData[i][j] = input.value;
-localStorage.setItem("tableData", JSON.stringify(savedData));
-});
-cell.appendChild(input);
-row.appendChild(cell);
-}
+    // Checklist (20 items)
+    const checklistEl = document.getElementById("checklist");
+    let checklist = JSON.parse(localStorage.getItem("checklist")) || Array(20).fill({ text: "", checked: false });
 
-tbody.appendChild(row);
-}
-}
+    checklist.forEach((item, i) => {
+      const div = document.createElement("div");
+      div.className = "checklist-item";
 
-renderTable(savedData);
-</script>
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.checked = item.checked;
+      checkbox.addEventListener("change", () => {
+        checklist[i].checked = checkbox.checked;
+        saveChecklist();
+      });
+
+      const input = document.createElement("input");
+      input.type = "text";
+      input.value = item.text;
+      input.placeholder = `Task ${i + 1}`;
+      input.addEventListener("input", () => {
+        checklist[i].text = input.value;
+        saveChecklist();
+      });
+
+      div.appendChild(checkbox);
+      div.appendChild(input);
+      checklistEl.appendChild(div);
+    });
+
+    function saveChecklist() {
+      localStorage.setItem("checklist", JSON.stringify(checklist));
+    }
+
+    // Calendar
+    const calendar = document.getElementById("calendar");
+    const modal = document.getElementById("modal");
+    const overlay = document.getElementById("overlay");
+    const eventInput = document.getElementById("eventInput");
+
+    let selectedDate = "";
+    let events = JSON.parse(localStorage.getItem("calendarEvents")) || {};
+
+    for (let i = 1; i <= 30; i++) {
+      const cell = document.createElement("div");
+      cell.className = "calendar-cell";
+      cell.innerHTML = `<div class="date">${i}</div>`;
+
+      if (events[i]) {
+        cell.innerHTML += `<div class="event">${events[i]}</div>`;
+      }
+
+      cell.onclick = () => {
+        selectedDate = i;
+        eventInput.value = events[i] || "";
+        overlay.style.display = modal.style.display = "block";
+      };
+
+      calendar.appendChild(cell);
+    }
+
+    function saveEvent() {
+      const value = eventInput.value.trim();
+      if (value) {
+        events[selectedDate] = value;
+      } else {
+        delete events[selectedDate];
+      }
+      localStorage.setItem("calendarEvents", JSON.stringify(events));
+      location.reload();
+    }
+
+    overlay.onclick = () => {
+      modal.style.display = overlay.style.display = "none";
+    };
+
+    // Routine
+    const routineTable = document.querySelector("#routine-table tbody");
+    let routineData = JSON.parse(localStorage.getItem("routineData")) || Array(15).fill({ time: "", task: "", done: false });
+
+    routineData.forEach((entry, i) => {
+      const row = document.createElement("tr");
+
+      const timeCell = document.createElement("td");
+      const timeInput = document.createElement("input");
+      timeInput.type = "text";
+      timeInput.className = "routine";
+      timeInput.placeholder = "e.g. 7:00 AM";
+      timeInput.value = entry.time;
+      timeInput.addEventListener("input", () => {
+        routineData[i].time = timeInput.value;
+        saveRoutine();
+      });
+      timeCell.appendChild(timeInput);
+
+      const taskCell = document.createElement("td");
+      const taskInput = document.createElement("input");
+      taskInput.type = "text";
+      taskInput.className = "routine";
+      taskInput.placeholder = "Enter task";
+      taskInput.value = entry.task;
+      taskInput.addEventListener("input", () => {
+        routineData[i].task = taskInput.value;
+        saveRoutine();
+      });
+      taskCell.appendChild(taskInput);
+
+      const doneCell = document.createElement("td");
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.checked = entry.done;
+      checkbox.addEventListener("change", () => {
+        routineData[i].done = checkbox.checked;
+        saveRoutine();
+      });
+      doneCell.appendChild(checkbox);
+
+      row.appendChild(timeCell);
+      row.appendChild(taskCell);
+      row.appendChild(doneCell);
+      routineTable.appendChild(row);
+    });
+
+    function saveRoutine() {
+      localStorage.setItem("routineData", JSON.stringify(routineData));
+    }
+  </script>
 </body>
-
 </html>
