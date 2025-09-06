@@ -1,0 +1,19 @@
+comments:
+  allowedFields: ["name", "message"]
+  requiredFields: ["name", "message"]
+  branch: "master"
+  moderation: true
+  path: "_data/comments"
+  format: "yaml"
+  generatedFields:
+    date:
+      type: date
+      options:
+        format: iso8601
+  transforms:
+    name: "trim"
+    message: "trim"
+  spam:
+    maxAge: 604800
+    honeypot: false
+    requiredFields: ["name", "message"]
