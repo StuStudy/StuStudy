@@ -101,26 +101,81 @@ h1 {
   height: auto;
   display: block;
 }
-#feedbackButton {
-  position: fixed;
-  bottom: 15px;
-  right: 15px;
-  z-index: 3;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  overflow: hidden;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-  transition: transform 0.2s, box-shadow 0.2s;
+
+/* Feedback Section */
+#feedback-section {
+  max-width: 450px;
+  margin: 30px auto 50px auto;
+  background: rgba(255,255,255,0.1);
+  padding: 20px;
+  border-radius: 12px;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  font-family: Arial, sans-serif;
+  z-index: 2;
+  position: relative;
 }
-#feedbackButton img {
+
+#feedback-section h2 {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+#feedback-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#feedback-form input[type="text"],
+#feedback-form textarea {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  font-size: 14px;
+  resize: vertical;
 }
-#feedbackButton:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 14px rgba(0,0,0,0.5);
+
+#feedback-form button {
+  background-color: #2196f3;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#feedback-form button:hover {
+  background-color: #1976d2;
+}
+
+.feedback-message {
+  margin-top: 10px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.comment {
+  background: rgba(255,255,255,0.15);
+  padding: 12px;
+  margin-top: 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.comment strong {
+  display: block;
+  margin-bottom: 5px;
+  color: #ffd700;
+}
+
+.comment p {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 </style>
 </head>
@@ -152,11 +207,27 @@ h1 {
   </a>
 </div>
 
-<!-- Feedback Button -->
-<a href="https://docs.google.com/forms/d/e/1FAIpQLSepoDOge7wGYtiltAxBobYTaY17-12LXWSJUW8REbFevc8n1w/viewform?usp=header"
-target="_blank" rel="noopener noreferrer" id="feedbackButton">
-  <img src="feedback.png" alt="Feedback" />
-</a>
+<!-- Feedback Section -->
+<div id="feedback-section">
+  <h2>Leave Your Feedback</h2>
+  <form id="feedback-form" method="POST" action="https://staticman3.herokuapp.com/v3/entry/github/stustudy/StuStudy/master/comments">
+    <input type="hidden" name="options[slug]" value="comments" />
+    <input type="hidden" name="options[repository]" value="stustudy/StuStudy" />
+    <input type="hidden" name="options[branch]" value="master" />
+    <input type="hidden" name="fields[name]" id="field-name" />
+    <input type="hidden" name="fields[message]" id="field-message" />
+
+    <input type="text" id="name-input" placeholder="Your Name" required maxlength="50" />
+    <textarea id="message-input" placeholder="Your Feedback" required rows="4" maxlength="500"></textarea>
+    <button type="submit">Send Feedback</button>
+  </form>
+  <div class="feedback-message" id="feedback-status"></div>
+
+  <h3>Previous Feedback</h3>
+  <div id="comments-list">
+    <p>Loading comments...</p>
+  </div>
+</div>
 
 <script>
 const body = document.body;
@@ -172,6 +243,9 @@ window.onload = function () {
   } else {
     body.classList.add("blue-theme");
   }
+
+  // Load existing comments
+  loadComments();
 };
 
 blueButton.onclick = function () {
@@ -185,7 +259,92 @@ pinkButton.onclick = function () {
   body.classList.add("pink-theme");
   localStorage.setItem("selectedTheme", "pink-theme");
 };
+
+// Feedback form logic
+const form = document.getElementById("feedback-form");
+const nameInput = document.getElementById("name-input");
+const messageInput = document.getElementById("message-input");
+const feedbackStatus = document.getElementById("feedback-status");
+
+form.addEventListener("submit", function(event) {
+  event.preventDefault();
+
+  const name = nameInput.value.trim();
+  const message = messageInput.value.trim();
+
+  if (!name || !message) {
+    feedbackStatus.textContent = "Please fill in both name and feedback.";
+    feedbackStatus.style.color = "red";
+    return;
+  }
+
+  // Set hidden fields to submit to Staticman
+  document.getElementById("field-name").value = name;
+  document.getElementById("field-message").value = message;
+
+  feedbackStatus.textContent = "Sending...";
+  feedbackStatus.style.color = "white";
+
+  form.submit();
+});
+
+// Load comments from your GitHub repo's _data/comments folder as YAML
+// Since GitHub pages can’t serve YAML raw easily, we'll use GitHub's API JSON output
+function loadComments() {
+  const commentsList = document.getElementById("comments-list");
+  commentsList.innerHTML = "Loading comments...";
+
+  // GitHub API to list files in _data/comments
+  fetch("https://api.github.com/repos/stustudy/StuStudy/contents/_data/comments")
+    .then(response => response.json())
+    .then(files => {
+      if (!Array.isArray(files)) throw new Error("No comments found");
+
+      const commentFiles = files.filter(file => file.name.endsWith(".yml") || file.name.endsWith(".yaml"));
+      if (commentFiles.length === 0) {
+        commentsList.innerHTML = "<p>No feedback yet. Be the first!</p>";
+        return;
+      }
+
+      // Fetch each comment file's content (Base64 encoded YAML)
+      Promise.all(commentFiles.map(file =>
+        fetch(file.download_url).then(r => r.text())
+      )).then(contents => {
+        // Parse YAML using a lightweight JS YAML parser (I’ll include it below)
+        let commentsHTML = "";
+        for (const content of contents) {
+          try {
+            const comment = jsyaml.load(content);
+            commentsHTML += `
+              <div class="comment">
+                <strong>${sanitize(comment.name)}</strong>
+                <p>${sanitize(comment.message)}</p>
+              </div>
+            `;
+          } catch {
+            // Ignore parse errors
+          }
+        }
+        commentsList.innerHTML = commentsHTML;
+      }).catch(() => {
+        commentsList.innerHTML = "<p>Error loading comments.</p>";
+      });
+    })
+    .catch(() => {
+      commentsList.innerHTML = "<p>Error loading comments.</p>";
+    });
+}
+
+// Simple sanitize function to prevent HTML injection
+function sanitize(text) {
+  const div = document.createElement("div");
+  div.textContent = text;
+  return div.innerHTML;
+}
 </script>
+
+<!-- YAML parser from https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js -->
+<script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
 
 </body>
 </html>
