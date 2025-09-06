@@ -1,9 +1,30 @@
-comments:
+# staticman.yml
+
+comment:
+  path: "_data/comments"
+  branch: "master"
+  filename: "{options.slug}/{year}-{month}-{day}-{timestamp}"
+  format: "yaml"
+  fields:
+    name:
+      required: true
+      type: string
+    message:
+      required: true
+      type: string
+  moderation: false
   allowedFields:
     - name
     - message
-  fileName: '{timestamp}-{sanitizedName}'
-  path: '_data/comments'
-  format: yaml
-  moderation: false
-  timestamp: true
+
+akismet:
+  enabled: true
+  author: "name"
+  authorEmail: "email"       # optional if you collect email, else remove
+  authorUrl: "website"       # optional if you collect website, else remove
+  content: "message"
+
+notifications:
+  email:
+    enabled: false           # set true if you want email notifications
+    to: "your-email@example.com"
