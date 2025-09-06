@@ -148,6 +148,30 @@
       transform: scale(1.1);
       box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5);
     }
+
+    /* Announcement Box */
+    #announcement {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background: rgba(255, 69, 0, 0.9);
+      color: white;
+      font-weight: bold;
+      padding: 8px 12px;
+      border-radius: 6px;
+      box-shadow: 0 0 8px rgba(255, 69, 0, 0.7);
+      font-size: 14px;
+      z-index: 1000;
+      cursor: pointer;
+      user-select: none;
+      max-width: 250px;
+      transition: opacity 0.3s ease;
+    }
+
+    #announcement.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
   </style>
 </head>
 
@@ -155,6 +179,10 @@
   <h1 style="color:lime;">Pick Anything!</h1>
   <button id="blueButton" class="color-button">Blue</button>
   <button id="pinkButton" class="color-button">Pink</button>
+
+  <div id="announcement" title="Click to toggle visibility">
+    <strong>ANNOUNCER:</strong> I added new features to "Music" part and "Student Planner" part. Thanks and enjoy!
+  </div>
 
   <div class="image-grid">
     <a href="notes.html" target="_blank" rel="noopener noreferrer">
@@ -205,8 +233,13 @@
       body.classList.add("pink-theme");
       localStorage.setItem("selectedTheme", "pink-theme");
     };
+
+    // Announcement toggle
+    const announcement = document.getElementById('announcement');
+    announcement.addEventListener('click', () => {
+      announcement.classList.toggle('hidden');
+    });
   </script>
 </body>
 
 </html>
-
