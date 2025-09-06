@@ -1,19 +1,351 @@
-comments:
-  allowedFields: ["name", "message"]
-  requiredFields: ["name", "message"]
-  branch: "master"
-  moderation: true
-  path: "_data/comments"
-  format: "yaml"
-  generatedFields:
-    date:
-      type: date
-      options:
-        format: iso8601
-  transforms:
-    name: "trim"
-    message: "trim"
-  spam:
-    maxAge: 604800
-    honeypot: false
-    requiredFields: ["name", "message"]
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-3E4DS88VEL"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-3E4DS88VEL');
+</script>
+
+<!-- Prevent iframe embedding -->
+<meta http-equiv="Content-Security-Policy" content="frame-ancestors 'none';">
+<meta http-equiv="X-Frame-Options" content="DENY">
+
+<title>StuStudy</title>
+<link rel="icon" type="image/png" href="StuStudyFavicon.png"/>
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  position: relative;
+  overflow-y: auto; /* Allow vertical scrolling */
+  min-height: 100vh; /* Full viewport height */
+}
+body.blue-theme {
+  background: linear-gradient(-45deg, #2196f3, #00bcd4, #1a237e, #0d47a1);
+  background-size: 400% 400%;
+  animation: gradientMove 20s ease infinite;
+}
+body.pink-theme {
+  background: linear-gradient(-45deg, #ff4081, #f50057, #ec407a, #f06292);
+  background-size: 400% 400%;
+  animation: gradientMove 20s ease infinite;
+}
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+h1 {
+  color: white;
+  margin: 20px 0 10px 0;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+}
+.color-button {
+  position: absolute;
+  top: 10px;
+  height: 50px;
+  cursor: pointer;
+  z-index: 3;
+  padding: 0 15px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  color: white;
+  font-weight: bold;
+}
+#blueButton {
+  right: 80px;
+  background-color: #1976d2;
+}
+#pinkButton {
+  right: 10px;
+  background-color: #e91e63;
+}
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 150px);
+  gap: 20px;
+  margin: 0 auto 40px auto;
+  width: max-content;
+  position: relative;
+  z-index: 1;
+}
+.image-grid a {
+  display: block;
+  text-align: center;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(4px);
+}
+.image-grid a:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+}
+.image-grid img {
+  width: 150px;
+  height: auto;
+  display: block;
+}
+
+/* Feedback Section */
+#feedback-section {
+  max-width: 450px;
+  margin: 30px auto 50px auto;
+  background: rgba(255,255,255,0.1);
+  padding: 20px;
+  border-radius: 12px;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  font-family: Arial, sans-serif;
+  z-index: 2;
+  position: relative;
+}
+
+#feedback-section h2 {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+#feedback-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#feedback-form input[type="text"],
+#feedback-form textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  font-size: 14px;
+  resize: vertical;
+}
+
+#feedback-form button {
+  background-color: #2196f3;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#feedback-form button:hover {
+  background-color: #1976d2;
+}
+
+.feedback-message {
+  margin-top: 10px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.comment {
+  background: rgba(255,255,255,0.15);
+  padding: 12px;
+  margin-top: 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.comment strong {
+  display: block;
+  margin-bottom: 5px;
+  color: #ffd700;
+}
+
+.comment p {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+</style>
+</head>
+<body>
+
+<h1>Pick Anything!</h1>
+
+<button id="blueButton" class="color-button">Blue</button>
+<button id="pinkButton" class="color-button">Pink</button>
+
+<div class="image-grid">
+  <a href="notes.html" target="_blank" rel="noopener noreferrer">
+    <img src="notes.png" alt="Notes" />
+  </a>
+  <a href="watch.html" target="_blank" rel="noopener noreferrer">
+    <img src="watch.png" alt="Watch" />
+  </a>
+  <a href="list.html" target="_blank" rel="noopener noreferrer">
+    <img src="list.png" alt="Daily List" />
+  </a>
+  
+  <!-- Success message for music part -->
+  <div style="grid-column: span 2; text-align: center; color: lime; font-weight: bold; font-size: 1.1em; margin-bottom: 15px;">
+    Successfully finished making the Music part!
+  </div>
+  
+  <a href="music.html" target="_blank" rel="noopener noreferrer">
+    <img src="music.png" alt="Music" />
+  </a>
+</div>
+
+<!-- Feedback Section -->
+<div id="feedback-section">
+  <h2>Leave Your Feedback</h2>
+  <form id="feedback-form" method="POST" action="https://staticman.netlify.app/v3/entry/github/stustudy/StuStudy/master/comments">
+    <input type="hidden" name="options[slug]" value="comments" />
+    <input type="hidden" name="options[repository]" value="stustudy/StuStudy" />
+    <input type="hidden" name="options[branch]" value="master" />
+    <input type="hidden" name="fields[name]" id="field-name" />
+    <input type="hidden" name="fields[message]" id="field-message" />
+
+    <input type="text" id="name-input" placeholder="Your Name" required maxlength="50" />
+    <textarea id="message-input" placeholder="Your Feedback" required rows="4" maxlength="500"></textarea>
+    <button type="submit">Send Feedback</button>
+  </form>
+  <div class="feedback-message" id="feedback-status"></div>
+
+  <h3>Previous Feedback</h3>
+  <div id="comments-list">
+    <p>Loading comments...</p>
+  </div>
+</div>
+
+<script>
+const body = document.body;
+const blueButton = document.getElementById("blueButton");
+const pinkButton = document.getElementById("pinkButton");
+
+// Apply saved theme on load
+window.onload = function () {
+  const savedTheme = localStorage.getItem("selectedTheme");
+  if (savedTheme) {
+    body.classList.remove("blue-theme", "pink-theme");
+    body.classList.add(savedTheme);
+  } else {
+    body.classList.add("blue-theme");
+  }
+
+  // Load existing comments
+  loadComments();
+};
+
+blueButton.onclick = function () {
+  body.classList.remove("pink-theme");
+  body.classList.add("blue-theme");
+  localStorage.setItem("selectedTheme", "blue-theme");
+};
+
+pinkButton.onclick = function () {
+  body.classList.remove("blue-theme");
+  body.classList.add("pink-theme");
+  localStorage.setItem("selectedTheme", "pink-theme");
+};
+
+// Feedback form logic
+const form = document.getElementById("feedback-form");
+const nameInput = document.getElementById("name-input");
+const messageInput = document.getElementById("message-input");
+const feedbackStatus = document.getElementById("feedback-status");
+
+form.addEventListener("submit", function(event) {
+  event.preventDefault();
+
+  const name = nameInput.value.trim();
+  const message = messageInput.value.trim();
+
+  if (!name || !message) {
+    feedbackStatus.textContent = "Please fill in both name and feedback.";
+    feedbackStatus.style.color = "red";
+    return;
+  }
+
+  // Set hidden fields to submit to Staticman
+  document.getElementById("field-name").value = name;
+  document.getElementById("field-message").value = message;
+
+  feedbackStatus.textContent = "Sending...";
+  feedbackStatus.style.color = "white";
+
+  form.submit();
+});
+
+// Load comments from your GitHub repo's _data/comments folder as YAML
+// Since GitHub pages can’t serve YAML raw easily, we'll use GitHub's API JSON output
+function loadComments() {
+  const commentsList = document.getElementById("comments-list");
+  commentsList.innerHTML = "Loading comments...";
+
+  // GitHub API to list files in _data/comments
+  fetch("https://api.github.com/repos/stustudy/StuStudy/contents/_data/comments")
+    .then(response => response.json())
+    .then(files => {
+      if (!Array.isArray(files)) throw new Error("No comments found");
+
+      const commentFiles = files.filter(file => file.name.endsWith(".yml") || file.name.endsWith(".yaml"));
+      if (commentFiles.length === 0) {
+        commentsList.innerHTML = "<p>No feedback yet. Be the first!</p>";
+        return;
+      }
+
+      // Fetch each comment file's content (Base64 encoded YAML)
+      Promise.all(commentFiles.map(file =>
+        fetch(file.download_url).then(r => r.text())
+      )).then(contents => {
+        // Parse YAML using a lightweight JS YAML parser (included below)
+        let commentsHTML = "";
+        for (const content of contents) {
+          try {
+            const comment = jsyaml.load(content);
+            commentsHTML += `
+              <div class="comment">
+                <strong>${sanitize(comment.name)}</strong>
+                <p>${sanitize(comment.message)}</p>
+              </div>
+            `;
+          } catch {
+            // Ignore parse errors
+          }
+        }
+        commentsList.innerHTML = commentsHTML;
+      }).catch(() => {
+        commentsList.innerHTML = "<p>Error loading comments.</p>";
+      });
+    })
+    .catch(() => {
+      commentsList.innerHTML = "<p>Error loading comments.</p>";
+    });
+}
+
+// Simple sanitize function to prevent HTML injection
+function sanitize(text) {
+  const div = document.createElement("div");
+  div.textContent = text;
+  return div.innerHTML;
+}
+</script>
+
+<!-- YAML parser from https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js -->
+<script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+
+</body>
+</html>
