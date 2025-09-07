@@ -181,7 +181,8 @@
   <button id="pinkButton" class="color-button">Pink</button>
 
   <div id="announcement" title="Click to toggle visibility">
-    <strong>ANNOUNCER:</strong> I created a discord server. Feel free to join, here's the link(or the code needed for the discord to join): https://discord.gg/RexCp2qM
+    <strong>ANNOUNCER:</strong> I created a discord server. Feel free to join, here's the link (or the code needed for the discord to join): 
+    <span id="discordLink" style="color: yellow; cursor: pointer;" onclick="copyToClipboard()">https://discord.gg/RexCp2qM</span>
   </div>
 
   <div class="image-grid">
@@ -239,6 +240,17 @@
     announcement.addEventListener('click', () => {
       announcement.classList.toggle('hidden');
     });
+
+    // Copy to clipboard function
+    function copyToClipboard() {
+      const discordLink = document.getElementById('discordLink');
+      const range = document.createRange();
+      range.selectNode(discordLink);
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+      document.execCommand('copy');
+      alert('Discord link copied to clipboard!');
+    }
   </script>
 </body>
 
