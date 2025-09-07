@@ -2,33 +2,9 @@
 <html lang="en">
 
 <head>
-  <!-- Meta Tags -->
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="StuStudy - A platform for students to manage notes, daily tasks, and more. Explore tools for study and productivity." />
-  <meta name="keywords" content="StuStudy, student planner, study tools, notes, daily list, music, productivity" />
-  <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'none';" />
-  <meta http-equiv="X-Frame-Options" content="DENY" />
-  <meta name="robots" content="index, follow" /> <!-- Instruct search engines to index and follow links -->
-
-  <!-- Title and Favicon -->
-  <title>StuStudy - Study and Productivity Tools</title>
-  <link rel="icon" type="image/png" href="StuStudyFavicon.png" />
-
-  <!-- Open Graph Meta Tags (for social sharing) -->
-  <meta property="og:title" content="StuStudy - Study and Productivity Tools" />
-  <meta property="og:description" content="Explore a range of tools to help students stay organized and productive." />
-  <meta property="og:image" content="your-image-url.png" />
-  <meta property="og:url" content="https://www.stustudy.com/" />
-  <meta property="og:type" content="website" />
-
-  <!-- Twitter Card Meta Tags (for Twitter sharing) -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="StuStudy - Study and Productivity Tools" />
-  <meta name="twitter:description" content="Explore a range of tools to help students stay organized and productive." />
-  <meta name="twitter:image" content="your-image-url.png" />
-  <meta name="twitter:creator" content="@yourtwitterhandle" />
 
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-3E4DS88VEL"></script>
@@ -42,9 +18,14 @@
     gtag('config', 'G-3E4DS88VEL');
   </script>
 
-  <!-- CSS Styles -->
+  <!-- Prevent iframe embedding -->
+  <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'none';" />
+  <meta http-equiv="X-Frame-Options" content="DENY" />
+
+  <title>StuStudy</title>
+  <link rel="icon" type="image/png" href="StuStudyFavicon.png" />
+
   <style>
-    /* General Body Styling */
     body {
       margin: 0;
       font-family: Arial, sans-serif;
@@ -78,7 +59,6 @@
       }
     }
 
-    /* Header Styling */
     h1 {
       color: white;
       margin: 20px 0 10px 0;
@@ -88,7 +68,6 @@
       text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
     }
 
-    /* Button Styling */
     .color-button {
       position: absolute;
       top: 10px;
@@ -114,7 +93,6 @@
       background-color: #e91e63;
     }
 
-    /* Image Grid Styling */
     .image-grid {
       display: grid;
       grid-template-columns: repeat(2, 150px);
@@ -147,7 +125,6 @@
       display: block;
     }
 
-    /* Feedback Button Styling */
     #feedbackButton {
       position: fixed;
       bottom: 15px;
@@ -199,19 +176,14 @@
 </head>
 
 <body>
-  <!-- Header -->
   <h1 style="color:lime;">Pick Anything!</h1>
-
-  <!-- Theme Switcher Buttons -->
   <button id="blueButton" class="color-button">Blue</button>
   <button id="pinkButton" class="color-button">Pink</button>
 
-  <!-- Announcement Box -->
-  <div id="announcement" title="Click to toggle visibility">
-    <strong>ANNOUNCER:</strong> I added new features to "Music" part and "Student Planner" part. Thanks and enjoy!
+  <div announcement id="" title="Click toggle  visibility">
+    <strong></strong>
   </div>
 
-  <!-- Image Grid with Links -->
   <div class="image-grid">
     <a href="notes.html" target="_blank" rel="noopener noreferrer">
       <img src="notes.png" alt="Notes" />
@@ -222,18 +194,18 @@
     <a href="list.html" target="_blank" rel="noopener noreferrer">
       <img src="list.png" alt="Daily List" />
     </a>
+
     <a href="music.html" target="_blank" rel="noopener noreferrer">
       <img src="music.png" alt="Music" />
     </a>
   </div>
 
   <!-- Feedback Button -->
-  <a href="https://docs.google.com/forms/d/e/1FAIpQLSepoDOge7wGYtiltAxBobYTaY17-12LXWSJUW8REbFevc8n1w/viewform?usp=header"
-    target="_blank" rel="noopener noreferrer" id="feedbackButton">
+  <a href="https://docs.google.com/forms/d/e/1FAIpQLSepoDOge7wGYtiltAxBobYTaY17-12LXWSJUW8REbFevc8n1w/viewform?usp=header" target="_blank"
+    rel="noopener noreferrer" id="feedbackButton">
     <img src="feedback.png" alt="Feedback" />
   </a>
 
-  <!-- Script for Theme Switching and Announcement Toggle -->
   <script>
     const body = document.body;
     const blueButton = document.getElementById("blueButton");
@@ -250,21 +222,19 @@
       }
     };
 
-    // Blue theme button click
     blueButton.onclick = function () {
       body.classList.remove("pink-theme");
       body.classList.add("blue-theme");
       localStorage.setItem("selectedTheme", "blue-theme");
     };
 
-    // Pink theme button click
     pinkButton.onclick = function () {
       body.classList.remove("blue-theme");
       body.classList.add("pink-theme");
       localStorage.setItem("selectedTheme", "pink-theme");
     };
 
-    // Announcement toggle on click
+    // Announcement toggle
     const announcement = document.getElementById('announcement');
     announcement.addEventListener('click', () => {
       announcement.classList.toggle('hidden');
