@@ -172,6 +172,12 @@
       opacity: 0;
       pointer-events: none;
     }
+
+    #discordLink {
+      color: yellow;
+      cursor: pointer;
+      text-decoration: underline;
+    }
   </style>
 </head>
 
@@ -182,7 +188,7 @@
 
   <div id="announcement" title="Click to toggle visibility">
     <strong>ANNOUNCER:</strong> I created a discord server. Feel free to join, here's the link (or the code needed for the discord to join): 
-    <span id="discordLink" style="color: yellow; cursor: pointer;" onclick="copyToClipboard()">https://discord.gg/RexCp2qM</span>
+    <span id="discordLink" onclick="openLink()">https://discord.gg/RexCp2qM</span>
   </div>
 
   <div class="image-grid">
@@ -195,7 +201,6 @@
     <a href="list.html" target="_blank" rel="noopener noreferrer">
       <img src="list.png" alt="Daily List" />
     </a>
-
     <a href="music.html" target="_blank" rel="noopener noreferrer">
       <img src="music.png" alt="Music" />
     </a>
@@ -241,15 +246,20 @@
       announcement.classList.toggle('hidden');
     });
 
-    // Copy to clipboard function
-    function copyToClipboard() {
-      const discordLink = document.getElementById('discordLink');
-      const range = document.createRange();
-      range.selectNode(discordLink);
-      window.getSelection().removeAllRanges();
-      window.getSelection().addRange(range);
-      document.execCommand('copy');
-      alert('Discord link copied to clipboard!');
+    // Open link in new tab
+    function openLink() {
+      const discordLink = document.getElementById('discordLink').innerText;
+      window.open('https://discord.gg/RexCp2qM', '_blank');
+      
+      // Copy to clipboard
+      navigator.clipboard.writeText(discordLink)
+        .then(() => {
+          alert('Discord link copied to clipboard!');
+        })
+        .catch(err => {
+          console.error('Error copying text: ', err);
+          alert('Failed to copy the link!');
+        });
     }
   </script>
 </body>
