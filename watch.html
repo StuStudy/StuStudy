@@ -188,7 +188,7 @@ const timersGrid = document.getElementById('timersGrid');
 const alarmSound = document.getElementById('alarmSound');
 
 // Timer durations in minutes
-const timerMinutes = [5,10,15,30,45,60,75,90,105,120];
+const timerMinutes = [5,10,15,30,45,60,75,90,105,120, 180, 280]; // Added 180 and 280
 
 // Store timers state
 const timers = [];
@@ -348,89 +348,7 @@ timer.btnStartPause.textContent = "Start";
 
 // Stopwatch logic
 const swDisplay = document.getElementById('stopwatchDisplay');
-const swStartPauseBtn = document.getElementById('swStartPause');
-const swResetBtn = document.getElementById('swReset');
-
-let swIntervalId = null;
-let swRunning = false;
-let swTime = 0; // in seconds
-
-function formatStopwatch(seconds) {
-const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
-const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
-const s = (seconds % 60).toString().padStart(2, '0');
-return `${h}:${m}:${s}`;
-}
-
-function saveStopwatchState() {
-localStorage.setItem('stopwatch', JSON.stringify({
-time: swTime,
-running: swRunning,
-lastUpdate: Date.now()
-}));
-}
-
-function loadStopwatchState() {
-const saved = localStorage.getItem('stopwatch');
-if (saved) {
-try {
-const data = JSON.parse(saved);
-if (data.running) {
-// Calculate elapsed time since last update
-const elapsed = Math.floor((Date.now() - data.lastUpdate) / 1000);
-swTime = data.time + elapsed;
-swRunning = true;
-swDisplay.textContent = formatStopwatch(swTime);
-swStartPauseBtn.textContent = 'Pause';
-swResetBtn.disabled = false;
-swIntervalId = setInterval(() => {
-swTime++;
-swDisplay.textContent = formatStopwatch(swTime);
-saveStopwatchState();
-}, 1000);
-} else {
-swTime = data.time;
-swRunning = false;
-swDisplay.textContent = formatStopwatch(swTime);
-swStartPauseBtn.textContent = 'Start';
-swResetBtn.disabled = swTime === 0;
-}
-} catch {
-// corrupted data - ignore
-}
-}
-}
-
-swStartPauseBtn.onclick = () => {
-if (!swRunning) {
-swIntervalId = setInterval(() => {
-swTime++;
-swDisplay.textContent = formatStopwatch(swTime);
-saveStopwatchState();
-}, 1000);
-swRunning = true;
-swStartPauseBtn.textContent = 'Pause';
-swResetBtn.disabled = false;
-saveStopwatchState();
-} else {
-clearInterval(swIntervalId);
-swRunning = false;
-swStartPauseBtn.textContent = 'Start';
-saveStopwatchState();
-}
-};
-
-swResetBtn.onclick = () => {
-clearInterval(swIntervalId);
-swRunning = false;
-swTime = 0;
-swDisplay.textContent = '00:00:00';
-swStartPauseBtn.textContent = 'Start';
-swResetBtn.disabled = true;
-saveStopwatchState();
-};
+const swStartPauseBtn = doc
 </script>
-
 </body>
-
 </html>
