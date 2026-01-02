@@ -178,6 +178,55 @@
       cursor: pointer;
       text-decoration: underline;
     }
+
+    /* Lock Button */
+    #lockButton {
+      position: fixed;
+      bottom: 80px;
+      left: 20px;
+      z-index: 4;
+      width: 60px;
+      height: 60px;
+      background-color: #555;
+      color: white;
+      font-size: 24px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    }
+
+    #lockButton:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Password Form */
+    #passwordForm {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+    }
+
+    #passwordForm input {
+      padding: 10px;
+      margin: 10px 0;
+      width: 200px;
+    }
+
+    #passwordForm button {
+      padding: 10px;
+      background-color: #2196f3;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
   </style>
 </head>
 
@@ -212,12 +261,33 @@
     <img src="feedback.png" alt="Feedback" />
   </a>
 
+  <!-- Lock Button -->
+  <button id="lockButton">🔒</button>
+
+  <!-- Password Form -->
+  <div id="passwordForm">
+    <h3>Create a Password</h3>
+    <input type="password" id="password1" placeholder="Enter password" required><br>
+    <input type="password" id="password2" placeholder="Confirm password" required><br>
+    <button id="submitPassword">Submit</button>
+    <p id="error" style="color:red; display:none;">Passwords do not match!</p>
+  </div>
+
   <script>
     const body = document.body;
     const blueButton = document.getElementById("blueButton");
     const pinkButton = document.getElementById("pinkButton");
+    const lockButton = document.getElementById("lockButton");
+    const passwordForm = document.getElementById("passwordForm");
+    const password1 = document.getElementById("password1");
+    const password2 = document.getElementById("password2");
+    const submitPasswordButton = document.getElementById("submitPassword");
+    const error = document.getElementById("error");
 
-    // Apply saved theme on load
+    let passwordSet = false;
+    let savedPassword = "";
+
+    // Theme Change
     window.onload = function () {
       const savedTheme = localStorage.getItem("selectedTheme");
       if (savedTheme) {
@@ -240,29 +310,33 @@
       localStorage.setItem("selectedTheme", "pink-theme");
     };
 
-    // Announcement toggle
-    const announcement = document.getElementById('announcement');
-    announcement.addEventListener('click', () => {
-      announcement.classList.toggle('hidden');
-    });
+    // Lock Button click
+    lockButton.onclick = function () {
+      if (!passwordSet) {
+        passwordForm.style.display = "block";
+      } else {
+        const userPassword = prompt("Enter your password to access:");
+        if (userPassword === savedPassword) {
+          alert("Access granted!");
+          // Redirect to study area or unlock content here
+        } else {
+          alert("Incorrect password.");
+        }
+      }
+    };
 
-    // Open link in new tab
-    function openLink() {
-      const discordLink = document.getElementById('discordLink').innerText;
-      window.open('https://discord.gg/RexCp2qM', '_blank');
-      
-      // Copy to clipboard
-      navigator.clipboard.writeText(discordLink)
-        .then(() => {
-          alert('Discord link copied to clipboard!');
-        })
-        .catch(err => {
-          console.error('Error copying text: ', err);
-          alert('Failed to copy the link!');
-        });
-    }
+    // Submit password
+    submitPasswordButton.onclick = function () {
+      if (password1.value === password2.value) {
+        savedPassword = password1.value;
+        passwordSet = true;
+        alert("Password has been set!");
+        passwordForm.style.display = "none";
+      } else {
+        error.style.display = "block";
+      }
+    };
   </script>
 </body>
 
 </html>
-
