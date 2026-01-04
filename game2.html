@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snake Game</title>
+<style>
+body {
+display: flex;
+justify-content: center;
+align-items: center;
+height: 100vh;
+background-color: #222;
+margin: 0;
+font-family: Arial, sans-serif;
+color: white;
+}
+
+canvas {
+border: 1px solid white;
+}
+
+.game-info {
+position: absolute;
+top: 20px;
+left: 20px;
+font-size: 18px;
+z-index: 10;
+}
+
+.game-over {
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+color: white;
+font-size: 30px;
+font-weight: bold;
+display: none;
+}
+</style>
+</head>
+
+<body>
+<canvas id="gameCanvas" width="400" height="400"></canvas>
+<div id="gameInfo" class="game-info">
+<div id="currentScore">Score: 0</div>
+<div id="highScore">High Score: 0</div>
+</div>
+<div id="gameOver" class="game-over">Game Over! Press R to Restart</div>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+const scale = 20;
+const rows = canvas.height / scale;
+const columns = canvas.width / scale;
+
+let snake;
+let food;
+let gameOver = false;
+let currentScore = 0;
+let highScore = localStorage.getItem('highScore') ? parseInt(localStorage.getItem('highScore')) : 0;
+
+const currentScoreDisplay = document.getElementById("currentScore");
+const highScoreDisplay = document.getElementById("highScore");
+const gameOverDisplay = document.getElementById("gameOver");
+
+(function setup() {
+snake = new Snake();
+food = new Food();
+window.setInterval(gameLoop, 100);
+document.addEventListener("keydown", changeDirection);
+updateHighScoreDisplay();
+})();
+
+function gameLoop() {
+if (gameOver) return;
+ctx.clearRect(0, 0, canvas.width, canvas.height);
+snake.update();
+snake.draw();
+food.draw();
+checkCollision();
+updateScore();
+}
+
+function checkCollision() {
+if (snake.x < 0 || snake.y < 0 || snake.x >= canvas.width || snake.y >= canvas.height) {
+endGame();
+}
+
+// Check if snake eats itself
+for (let i = 0; i < snake.tail.length; i++) {
+if (snake.x === snake.tail[i].x && snake.y === snake.tail[i].y) {
+endGame();
+}
+}
+
+// Check if snake eats food
+if (snake.x === food.x && snake.y === food.y) {
+snake.grow();
+food.randomize();
+increaseScore();
+}
+}
+
+function increaseScore() {
+currentScore++;
+if (currentScore > highScore) {
+highScore = currentScore;
+localStorage.setItem('highScore', highScore); // Save to localStorage
+}
+}
+
+function updateScore() {
+currentScoreDisplay.textContent = `Score: ${currentScore}`;
+highScoreDisplay.textContent = `High Score: ${highScore}`;
+}
+
+function endGame() {
+gameOver = true;
+gameOverDisplay.style.display = "block";
+saveHighScore();
+}
+
+function saveHighScore() {
+localStorage.setItem('highScore', highScore); // Save the highest score to localStorage
+}
+
+function changeDirection(event) {
+const key = event.keyCode;
+if (key === 37 && snake.direction !== "right") {
+snake.setDirection("left");
+}
+if (key === 38 && snake.direction !== "down") {
+snake.setDirection("up");
+}
+if (key === 39 && snake.direction !== "left") {
+snake.setDirection("right");
+}
+if (key === 40 && snake.direction !== "up") {
+snake.setDirection("down");
+}
+if (key === 82 && gameOver) { // R key to restart
+restartGame();
+}
+}
+
+function restartGame() {
+gameOver = false;
+currentScore = 0;
+snake = new Snake();
+food = new Food();
+gameOverDisplay.style.display = "none";
+updateScore();
+}
+
+function Snake() {
+this.x = 100;
+this.y = 100;
+this.direction = "right";
+this.tail = [];
+
+this.update = function () {
+for (let i = 0; i < this.tail.length - 1; i++) {
+this.tail[i] = this.tail[i + 1];
+}
+this.tail[this.tail.length - 1] = { x: this.x, y: this.y };
+
+if (this.direction === "left") {
+this.x -= scale;
+} else if (this.direction === "up") {
+this.y -= scale;
+} else if (this.direction === "right") {
+this.x += scale;
+} else if (this.direction === "down") {
+this.y += scale;
+}
+};
+
+this.grow = function () {
+this.tail.push({});
+};
+
+this.setDirection = function (direction) {
+this.direction = direction;
+};
+
+this.draw = function () {
+ctx.fillStyle = "lime";
+for (let i = 0; i < this.tail.length; i++) {
+ctx.fillRect(this.tail[i].x, this.tail[i].y, scale, scale);
+}
+ctx.fillRect(this.x, this.y, scale, scale);
+};
+}
+
+function Food() {
+this.x = Math.floor(Math.random() * rows) * scale;
+this.y = Math.floor(Math.random() * columns) * scale;
+
+this.randomize = function () {
+this.x = Math.floor(Math.random() * rows) * scale;
+this.y = Math.floor(Math.random() * columns) * scale;
+};
+
+this.draw = function () {
+ctx.fillStyle = "red";
+ctx.fillRect(this.x, this.y, scale, scale);
+};
+}
+
+function updateHighScoreDisplay() {
+highScoreDisplay.textContent = `High Score: ${highScore}`;
+}
+</script>
+</body>
+
+</html>
