@@ -149,21 +149,26 @@
     }
 
     #announcement {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      background: rgba(255,69,0,0.9);
-      color: white;
-      font-weight: bold;
-      padding: 8px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
+  position: fixed;
+  top: 10px;                /* Keeps it at the top */
+  left: 10px;               /* Keeps it at the left */
+  background: rgba(255, 69, 0, 0.9);
+  color: white;
+  font-weight: bold;
+  padding: 8px 12px;        /* Reduced padding */
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;          /* Adjust font size */
+  max-width: 250px;         /* Limit width */
+  box-shadow: 0 0 8px rgba(255, 69, 0, 0.7); /* A subtle shadow */
+  z-index: 1000;            /* Keeps it on top of other elements */
+}
 
-    #announcement.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
+#announcement.hidden {
+  opacity: 0;
+  pointer-events: none;     /* Makes it invisible and unclickable when hidden */
+}
+
   </style>
 </head>
 
@@ -211,6 +216,19 @@
     document.getElementById("announcement").onclick = function () {
       this.classList.toggle("hidden");
     };
+    
+      const announcement = document.getElementById("announcement");
+
+  // On page load: check if user already closed it
+  if (localStorage.getItem("announcementHidden") === "true") {
+    announcement.style.display = "none";
+  }
+
+  // When clicked: hide + save preference
+  announcement.addEventListener("click", () => {
+    announcement.style.display = "none";
+    localStorage.setItem("announcementHidden", "true");
+  });
   </script>
 </body>
 </html>
