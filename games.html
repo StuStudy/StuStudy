@@ -2,176 +2,176 @@
 <html lang="en">
 
 <head>
-<meta charset="UTF-8" />
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-3E4DS88VEL"></script>
-<script>
-window.dataLayer = window.dataLayer || [];
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3E4DS88VEL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
 
-function gtag() {
-dataLayer.push(arguments);
-}
-gtag('js', new Date());
-gtag('config', 'G-3E4DS88VEL');
-</script>
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+    gtag('config', 'G-3E4DS88VEL');
+  </script>
 
-<!-- Prevent iframe embedding -->
-<meta http-equiv="Content-Security-Policy" content="frame-ancestors 'none';" />
-<meta http-equiv="X-Frame-Options" content="DENY" />
+  <!-- Prevent iframe embedding -->
+  <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'none';" />
+  <meta http-equiv="X-Frame-Options" content="DENY" />
 
-<title>Gaming</title>
-<link rel="icon" type="image/png" href="StuStudyFavicon.png" />
+  <title>Gaming</title>
+  <link rel="icon" type="image/png" href="StuStudyFavicon.png" />
 
-<style>
-body {
-margin: 0;
-font-family: Arial, sans-serif;
-position: relative;
-overflow: hidden;
-}
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      position: relative;
+      overflow: hidden;
+    }
 
-body.blue-theme {
-background: linear-gradient(-45deg, #2196f3, #00bcd4, #1a237e, #0d47a1);
-background-size: 400% 400%;
-animation: gradientMove 20s ease infinite;
-}
+    body.blue-theme {
+      background: linear-gradient(-45deg, #2196f3, #00bcd4, #1a237e, #0d47a1);
+      background-size: 400% 400%;
+      animation: gradientMove 20s ease infinite;
+    }
 
-body.pink-theme {
-background: linear-gradient(-45deg, #ff4081, #f50057, #ec407a, #f06292);
-background-size: 400% 400%;
-animation: gradientMove 20s ease infinite;
-}
+    body.pink-theme {
+      background: linear-gradient(-45deg, #ff4081, #f50057, #ec407a, #f06292);
+      background-size: 400% 400%;
+      animation: gradientMove 20s ease infinite;
+    }
 
-@keyframes gradientMove {
-0% {
-background-position: 0% 50%;
-}
+    @keyframes gradientMove {
+      0% {
+        background-position: 0% 50%;
+      }
 
-50% {
-background-position: 100% 50%;
-}
+      50% {
+        background-position: 100% 50%;
+      }
 
-100% {
-background-position: 0% 50%;
-}
-}
+      100% {
+        background-position: 0% 50%;
+      }
+    }
 
-h1 {
-color: white;
-margin: 20px 0 10px 0;
-text-align: center;
-position: relative;
-z-index: 2;
-text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
-}
+    h1 {
+      color: white;
+      margin: 20px 0 10px 0;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+      text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+    }
 
-.color-button {
-position: absolute;
-top: 10px;
-height: 50px;
-cursor: pointer;
-z-index: 3;
-padding: 0 15px;
-border: none;
-border-radius: 8px;
-font-size: 16px;
-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-color: white;
-font-weight: bold;
-}
+    .color-button {
+      position: absolute;
+      top: 10px;
+      height: 50px;
+      cursor: pointer;
+      z-index: 3;
+      padding: 0 15px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      color: white;
+      font-weight: bold;
+    }
 
-#blueButton {
-right: 80px;
-background-color: #1976d2;
-}
+    #blueButton {
+      right: 80px;
+      background-color: #1976d2;
+    }
 
-#pinkButton {
-right: 10px;
-background-color: #e91e63;
-}
+    #pinkButton {
+      right: 10px;
+      background-color: #e91e63;
+    }
 
-/* Game Category Section */
-.game-category {
-margin: 40px auto;
-text-align: center;
-}
+    /* Game Category Section */
+    .game-category {
+      margin: 40px auto;
+      text-align: center;
+    }
 
-.game-category a {
-display: inline-block;
-text-decoration: none;
-background-color: rgba(255, 255, 255, 0.1);
-padding: 20px 40px;
-border-radius: 12px;
-margin: 10px;
-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-transition: transform 0.2s, box-shadow 0.2s;
-}
+    .game-category a {
+      display: inline-block;
+      text-decoration: none;
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 20px 40px;
+      border-radius: 12px;
+      margin: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
 
-.game-category a:hover {
-transform: scale(1.1);
-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
-}
+    .game-category a:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+    }
 
-.game-category a img {
-width: 100px;
-height: 100px;
-object-fit: contain;
-}
-</style>
+    .game-category a img {
+      width: 100px;
+      height: 100px;
+      object-fit: contain;
+    }
+  </style>
 </head>
 
 <body>
-<h1>Welcome to the Gaming Section!</h1>
-<button id="blueButton" class="color-button">Blue</button>
-<button id="pinkButton" class="color-button">Pink</button>
+  <h1>Welcome to the Gaming Section!</h1>
+  <button id="blueButton" class="color-button">Blue</button>
+  <button id="pinkButton" class="color-button">Pink</button>
 
-<!-- Game Links Section -->
-<div class="game-category">
-<a href="game1.html" target="_blank" rel="noopener noreferrer">
-<img src="game1-icon.png" alt="Game 1" />
-<p>Game 1</p>
-</a>
-<a href="game2.html" target="_blank" rel="noopener noreferrer">
-<img src="game2-icon.png" alt="Game 2" />
-<p>Game 2</p>
-</a>
-<a href="game3.html" target="_blank" rel="noopener noreferrer">
-<img src="game3-icon.png" alt="Game 3" />
-<p>Game 3</p>
-</a>
-</div>
+  <!-- Game Links Section -->
+  <div class="game-category">
+    <a href="minecraft.html" target="_blank" rel="noopener noreferrer">
+      <img src="minecraft-icon.png" alt="Minecraft" />
+      <p>Minecraft</p>
+    </a>
+    <a href="snakegame.html" target="_blank" rel="noopener noreferrer">
+      <img src="snakegame-icon.png" alt="Snake Game" />
+      <p>Snake Game</p>
+    </a>
+    <a href="typingclub.html" target="_blank" rel="noopener noreferrer">
+      <img src="typingclub-icon.png" alt="Typing Club" />
+      <p>Typing Club</p>
+    </a>
+  </div>
 
-<script>
-const body = document.body;
-const blueButton = document.getElementById("blueButton");
-const pinkButton = document.getElementById("pinkButton");
+  <script>
+    const body = document.body;
+    const blueButton = document.getElementById("blueButton");
+    const pinkButton = document.getElementById("pinkButton");
 
-// Apply saved theme on load
-window.onload = function () {
-const savedTheme = localStorage.getItem("selectedTheme");
-if (savedTheme) {
-body.classList.remove("blue-theme", "pink-theme");
-body.classList.add(savedTheme);
-} else {
-body.classList.add("blue-theme");
-}
-};
+    // Apply saved theme on load
+    window.onload = function () {
+      const savedTheme = localStorage.getItem("selectedTheme");
+      if (savedTheme) {
+        body.classList.remove("blue-theme", "pink-theme");
+        body.classList.add(savedTheme);
+      } else {
+        body.classList.add("blue-theme");
+      }
+    };
 
-blueButton.onclick = function () {
-body.classList.remove("pink-theme");
-body.classList.add("blue-theme");
-localStorage.setItem("selectedTheme", "blue-theme");
-};
+    blueButton.onclick = function () {
+      body.classList.remove("pink-theme");
+      body.classList.add("blue-theme");
+      localStorage.setItem("selectedTheme", "blue-theme");
+    };
 
-pinkButton.onclick = function () {
-body.classList.remove("blue-theme");
-body.classList.add("pink-theme");
-localStorage.setItem("selectedTheme", "pink-theme");
-};
-</script>
+    pinkButton.onclick = function () {
+      body.classList.remove("blue-theme");
+      body.classList.add("pink-theme");
+      localStorage.setItem("selectedTheme", "pink-theme");
+    };
+  </script>
 </body>
 
 </html>
