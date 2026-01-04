@@ -1,29 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+  <!-- ✅ SEO: Allow Google indexing -->
+  <meta name="robots" content="index, follow" />
+
+  <!-- ✅ SEO: Title -->
+  <title>StuStudy – Study Tools, Notes, Music & Productivity</title>
+
+  <!-- ✅ SEO: Description -->
+  <meta
+    name="description"
+    content="StuStudy is a student productivity website offering notes, music, daily lists, games, and study tools to help students stay focused."
+  />
+
+  <!-- SEO: Keywords -->
+  <meta
+    name="keywords"
+    content="StuStudy, study tools, notes, student productivity, study music, school website"
+  />
+
+  <meta name="author" content="StuStudy" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="StuStudyFavicon.png" />
+
+  <!-- Open Graph (for sharing) -->
+  <meta property="og:title" content="StuStudy" />
+  <meta
+    property="og:description"
+    content="All-in-one study website with notes, music, lists, and productivity tools."
+  />
+  <meta property="og:type" content="website" />
+
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-3E4DS88VEL"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-
-    function gtag() {
-      dataLayer.push(arguments);
-    }
+    function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', 'G-3E4DS88VEL');
   </script>
 
-  <!-- Prevent iframe embedding -->
+  <!-- Security -->
   <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'none';" />
   <meta http-equiv="X-Frame-Options" content="DENY" />
-
-  <title>StuStudy</title>
-  <link rel="icon" type="image/png" href="StuStudyFavicon.png" />
 
   <style>
     body {
@@ -46,26 +70,23 @@
     }
 
     @keyframes gradientMove {
-      0% {
-        background-position: 0% 50%;
-      }
-
-      50% {
-        background-position: 100% 50%;
-      }
-
-      100% {
-        background-position: 0% 50%;
-      }
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
     h1 {
-      color: white;
-      margin: 20px 0 10px 0;
+      color: lime;
+      margin: 20px 0 5px 0;
       text-align: center;
-      position: relative;
-      z-index: 2;
-      text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+    }
+
+    .subtitle {
+      text-align: center;
+      color: white;
+      margin-bottom: 15px;
+      font-size: 16px;
     }
 
     .color-button {
@@ -83,15 +104,8 @@
       font-weight: bold;
     }
 
-    #blueButton {
-      right: 80px;
-      background-color: #1976d2;
-    }
-
-    #pinkButton {
-      right: 10px;
-      background-color: #e91e63;
-    }
+    #blueButton { right: 80px; background-color: #1976d2; }
+    #pinkButton { right: 10px; background-color: #e91e63; }
 
     .image-grid {
       display: grid;
@@ -99,29 +113,22 @@
       gap: 20px;
       margin: 0 auto 40px auto;
       width: max-content;
-      position: relative;
-      z-index: 1;
     }
 
     .image-grid a {
       display: block;
-      text-align: center;
       border-radius: 10px;
       overflow: hidden;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-      transition: transform 0.2s, box-shadow 0.2s;
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(4px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      transition: transform 0.2s;
     }
 
     .image-grid a:hover {
       transform: scale(1.05);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
     }
 
     .image-grid img {
       width: 150px;
-      height: auto;
       display: block;
     }
 
@@ -129,143 +136,81 @@
       position: fixed;
       bottom: 15px;
       right: 15px;
-      z-index: 3;
       width: 60px;
       height: 60px;
       border-radius: 50%;
       overflow: hidden;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
     }
 
     #feedbackButton img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
     }
 
-    #feedbackButton:hover {
-      transform: scale(1.1);
-      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5);
-    }
-
-    /* Announcement Box */
     #announcement {
       position: fixed;
       top: 10px;
       left: 10px;
-      background: rgba(255, 69, 0, 0.9);
+      background: rgba(255,69,0,0.9);
       color: white;
       font-weight: bold;
       padding: 8px 12px;
       border-radius: 6px;
-      box-shadow: 0 0 8px rgba(255, 69, 0, 0.7);
-      font-size: 14px;
-      z-index: 1000;
       cursor: pointer;
-      user-select: none;
-      max-width: 250px;
-      transition: opacity 0.3s ease;
     }
 
     #announcement.hidden {
       opacity: 0;
       pointer-events: none;
     }
-
-    #discordLink {
-      color: yellow;
-      cursor: pointer;
-      text-decoration: underline;
-    }
   </style>
 </head>
 
-<body>
-  <h1 style="color:lime;">Pick Anything!</h1>
+<body class="blue-theme">
+  <h1>StuStudy</h1>
+  <p class="subtitle">Study tools, notes, music, and productivity for students</p>
+
   <button id="blueButton" class="color-button">Blue</button>
   <button id="pinkButton" class="color-button">Pink</button>
 
-  <div id="announcement" title="Click to toggle visibility">
-    <strong>ANNOUNCMENT:if anyone still using this website you are W and im back fixing bugs and adding more stuff. And, thanks for supporting!!:)</strong> 
-    <span id="discordLink" onclick="openLink()"></span>
+  <div id="announcement">
+    ANNOUNCEMENT: I'm back fixing bugs and adding more stuff — thanks for supporting!
   </div>
 
   <div class="image-grid">
-    <a href="notes.html" target="_blank" rel="noopener noreferrer">
-      <img src="notes.png" alt="Notes" />
-    </a>
-    <a href="watch.html" target="_blank" rel="noopener noreferrer">
-      <img src="watch.png" alt="Watch" />
-    </a>
-    <a href="list.html" target="_blank" rel="noopener noreferrer">
-      <img src="list.png" alt="Daily List" />
-    </a>
-    <a href="music.html" target="_blank" rel="noopener noreferrer">
-      <img src="music.png" alt="Music" />
-    </a>
-    <!-- Added Game Category -->
-    <a href="games.html" target="_blank" rel="noopener noreferrer">
-      <img src="games.png" alt="Games" />
-    </a>
+    <a href="notes.html"><img src="notes.png" alt="Notes"></a>
+    <a href="watch.html"><img src="watch.png" alt="Watch"></a>
+    <a href="list.html"><img src="list.png" alt="Daily List"></a>
+    <a href="music.html"><img src="music.png" alt="Music"></a>
+    <a href="games.html"><img src="games.png" alt="Games"></a>
   </div>
 
-  <!-- Feedback Button -->
-  <a href="https://docs.google.com/forms/d/e/1FAIpQLSepoDOge7wGYtiltAxBobYTaY17-12LXWSJUW8REbFevc8n1w/viewform?usp=header" target="_blank"
-    rel="noopener noreferrer" id="feedbackButton">
-    <img src="feedback.png" alt="Feedback" />
+  <a
+    href="https://docs.google.com/forms/d/e/1FAIpQLSepoDOge7wGYtiltAxBobYTaY17-12LXWSJUW8REbFevc8n1w/viewform"
+    target="_blank"
+    id="feedbackButton"
+  >
+    <img src="feedback.png" alt="Feedback">
   </a>
 
   <script>
     const body = document.body;
-    const blueButton = document.getElementById("blueButton");
-    const pinkButton = document.getElementById("pinkButton");
-
-    // Apply saved theme on load
-    window.onload = function () {
-      const savedTheme = localStorage.getItem("selectedTheme");
-      if (savedTheme) {
-        body.classList.remove("blue-theme", "pink-theme");
-        body.classList.add(savedTheme);
-      } else {
-        body.classList.add("blue-theme");
-      }
+    blueButton.onclick = () => {
+      body.className = "blue-theme";
+      localStorage.setItem("theme", "blue");
+    };
+    pinkButton.onclick = () => {
+      body.className = "pink-theme";
+      localStorage.setItem("theme", "pink");
     };
 
-    blueButton.onclick = function () {
-      body.classList.remove("pink-theme");
-      body.classList.add("blue-theme");
-      localStorage.setItem("selectedTheme", "blue-theme");
+    const saved = localStorage.getItem("theme");
+    if (saved === "pink") body.className = "pink-theme";
+
+    document.getElementById("announcement").onclick = function () {
+      this.classList.toggle("hidden");
     };
-
-    pinkButton.onclick = function () {
-      body.classList.remove("blue-theme");
-      body.classList.add("pink-theme");
-      localStorage.setItem("selectedTheme", "pink-theme");
-    };
-
-    // Announcement toggle
-    const announcement = document.getElementById('announcement');
-    announcement.addEventListener('click', () => {
-      announcement.classList.toggle('hidden');
-    });
-
-    // Open link in new tab
-    function openLink() {
-      const discordLink = document.getElementById('discordLink').innerText;
-      window.open('https://discord.gg/RexCp2qM', '_blank');
-      
-      // Copy to clipboard
-      navigator.clipboard.writeText(discordLink)
-        .then(() => {
-          alert('Discord link copied to clipboard!');
-        })
-        .catch(err => {
-          console.error('Error copying text: ', err);
-          alert('Failed to copy the link!');
-        });
-    }
   </script>
 </body>
-
 </html>
