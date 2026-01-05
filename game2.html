@@ -131,17 +131,25 @@ localStorage.setItem('highScore', highScore); // Save the highest score to local
 
 function changeDirection(event) {
 const key = event.keyCode;
-if (key === 37 && snake.direction !== "right") {
+if (key === 37 || key === 65) { // Left Arrow or A key
+if (snake.direction !== "right") {
 snake.setDirection("left");
 }
-if (key === 38 && snake.direction !== "down") {
+}
+if (key === 38 || key === 87) { // Up Arrow or W key
+if (snake.direction !== "down") {
 snake.setDirection("up");
 }
-if (key === 39 && snake.direction !== "left") {
+}
+if (key === 39 || key === 68) { // Right Arrow or D key
+if (snake.direction !== "left") {
 snake.setDirection("right");
 }
-if (key === 40 && snake.direction !== "up") {
+}
+if (key === 40 || key === 83) { // Down Arrow or S key
+if (snake.direction !== "up") {
 snake.setDirection("down");
+}
 }
 if (key === 82 && gameOver) { // R key to restart
 restartGame();
