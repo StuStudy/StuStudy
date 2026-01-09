@@ -5,35 +5,16 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- ✅ SEO: Allow Google indexing -->
+  <!-- SEO meta tags -->
   <meta name="robots" content="index, follow" />
-
-  <!-- ✅ SEO: Title -->
-  <title>StuStudy – Study Tools, Notes, Music & Productivity</title>
-
-  <!-- ✅ SEO: Description -->
-  <meta
-    name="description"
-    content="StuStudy is a student productivity website offering notes, music, daily lists, games, and study tools to help students stay focused."
-  />
-
-  <!-- SEO: Keywords -->
-  <meta
-    name="keywords"
-    content="StuStudy, study tools, notes, student productivity, study music, school website"
-  />
-
+  <meta name="description" content="StuStudy is a student productivity website offering notes, music, daily lists, games, and study tools to help students stay focused." />
+  <meta name="keywords" content="StuStudy, study tools, notes, student productivity, study music, school website" />
   <meta name="author" content="StuStudy" />
-
-  <!-- Favicon -->
   <link rel="icon" type="image/png" href="StuStudyFavicon.png" />
 
-  <!-- Open Graph (for sharing) -->
+  <!-- Open Graph for sharing -->
   <meta property="og:title" content="StuStudy" />
-  <meta
-    property="og:description"
-    content="All-in-one study website with notes, music, lists, and productivity tools."
-  />
+  <meta property="og:description" content="All-in-one study website with notes, music, lists, and productivity tools." />
   <meta property="og:type" content="website" />
 
   <!-- Google Analytics -->
@@ -87,6 +68,16 @@
       color: white;
       margin-bottom: 15px;
       font-size: 16px;
+    }
+
+    /* Positioning the date, time, and day of the week in the bottom left corner with lime color */
+    #datetime {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      color: lime;  /* Lime color */
+      font-size: 16px;
+      text-align: left;
     }
 
     .color-button {
@@ -149,26 +140,25 @@
     }
 
     #announcement {
-  position: fixed;
-  top: 10px;                /* Keeps it at the top */
-  left: 10px;               /* Keeps it at the left */
-  background: rgba(255, 69, 0, 0.9);
-  color: white;
-  font-weight: bold;
-  padding: 8px 12px;        /* Reduced padding */
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;          /* Adjust font size */
-  max-width: 250px;         /* Limit width */
-  box-shadow: 0 0 8px rgba(255, 69, 0, 0.7); /* A subtle shadow */
-  z-index: 1000;            /* Keeps it on top of other elements */
-}
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background: rgba(255, 69, 0, 0.9);
+      color: white;
+      font-weight: bold;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      max-width: 250px;
+      box-shadow: 0 0 8px rgba(255, 69, 0, 0.7);
+      z-index: 1000;
+    }
 
-#announcement.hidden {
-  opacity: 0;
-  pointer-events: none;     /* Makes it invisible and unclickable when hidden */
-}
-
+    #announcement.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
   </style>
 </head>
 
@@ -191,13 +181,12 @@
     <a href="games.html"><img src="games.png" alt="Games"></a>
   </div>
 
-  <a
-    href="https://docs.google.com/forms/d/e/1FAIpQLSepoDOge7wGYtiltAxBobYTaY17-12LXWSJUW8REbFevc8n1w/viewform"
-    target="_blank"
-    id="feedbackButton"
-  >
+  <a href="https://docs.google.com/forms/d/e/1FAIpQLSepoDOge7wGYtiltAxBobYTaY17-12LXWSJUW8REbFevc8n1w/viewform" target="_blank" id="feedbackButton">
     <img src="feedback.png" alt="Feedback">
   </a>
+
+  <!-- Add the datetime element to the body -->
+  <p id="datetime" class="subtitle"></p>
 
   <script>
     const body = document.body;
@@ -216,19 +205,34 @@
     document.getElementById("announcement").onclick = function () {
       this.classList.toggle("hidden");
     };
-    
-      const announcement = document.getElementById("announcement");
 
-  // On page load: check if user already closed it
-  if (localStorage.getItem("announcementHidden") === "true") {
-    announcement.style.display = "none";
-  }
+    const announcement = document.getElementById("announcement");
 
-  // When clicked: hide + save preference
-  announcement.addEventListener("click", () => {
-    announcement.style.display = "none";
-    localStorage.setItem("announcementHidden", "true");
-  });
+    // On page load: check if user already closed it
+    if (localStorage.getItem("announcementHidden") === "true") {
+      announcement.style.display = "none";
+    }
+
+    // When clicked: hide + save preference
+    announcement.addEventListener("click", () => {
+      announcement.style.display = "none";
+      localStorage.setItem("announcementHidden", "true");
+    });
+
+    // Function to update the date and time
+    function updateDateTime() {
+      const now = new Date();
+      const dayOfWeek = now.toLocaleString('en-US', { weekday: 'long' });
+      const date = now.toLocaleDateString('en-US');
+      const time = now.toLocaleTimeString('en-US');
+      document.getElementById('datetime').textContent = `${dayOfWeek}, ${date}, ${time}`;
+    }
+
+    // Call the function to update date and time on page load
+    updateDateTime();
+
+    // Optionally, you can set an interval to update it every second
+    setInterval(updateDateTime, 1000); // Updates every second
   </script>
 </body>
 </html>
