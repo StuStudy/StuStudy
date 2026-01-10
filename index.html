@@ -5,37 +5,26 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- SEO meta tags -->
-  <meta name="robots" content="index, follow" />
+  <title>StuStudy - Student Productivity Tools and Study Resources</title>
+
   <meta name="description" content="StuStudy is a student productivity website offering notes, music, daily lists, games, and study tools to help students stay focused." />
   <meta name="keywords" content="StuStudy, study tools, notes, student productivity, study music, school website" />
   <meta name="author" content="StuStudy" />
-  <link rel="icon" type="image/png" href="StuStudyFavicon.png" />
 
-  <!-- Open Graph for sharing -->
-  <meta property="og:title" content="StuStudy" />
-  <meta property="og:description" content="All-in-one study website with notes, music, lists, and productivity tools." />
+  <meta property="og:title" content="StuStudy - Study Tools & Productivity" />
+  <meta property="og:description" content="All-in-one study website with notes, music, lists, and productivity tools for students." />
+  <meta property="og:image" content="image-url.jpg" />
+  <meta property="og:url" content="https://www.stustudy.com" />
   <meta property="og:type" content="website" />
 
-  <!-- Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3E4DS88VEL"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-3E4DS88VEL');
-  </script>
-
-  <!-- Security -->
-  <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'none';" />
-  <meta http-equiv="X-Frame-Options" content="DENY" />
+  <link rel="icon" type="image/png" href="StuStudyFavicon.png" />
 
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       position: relative;
-      overflow: hidden;
+      overflow-x: hidden;
     }
 
     body.blue-theme {
@@ -70,18 +59,17 @@
       font-size: 16px;
     }
 
-    /* Positioning the date, time, and day of the week in the bottom left corner with lime color */
     #datetime {
       position: fixed;
       bottom: 10px;
       left: 10px;
-      color: lime;  /* Lime color */
+      color: lime;
       font-size: 16px;
       text-align: left;
     }
 
     .color-button {
-      position: absolute;
+      position: fixed;
       top: 10px;
       height: 50px;
       cursor: pointer;
@@ -100,10 +88,11 @@
 
     .image-grid {
       display: grid;
-      grid-template-columns: repeat(2, 150px);
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 15px;
       margin: 0 auto 40px auto;
-      width: max-content;
+      max-width: 500px;
+      padding: 0 10px;
     }
 
     .image-grid a {
@@ -119,16 +108,17 @@
     }
 
     .image-grid img {
-      width: 150px;
+      width: 100%;
       display: block;
+      height: auto;
     }
 
     #feedbackButton {
       position: fixed;
       bottom: 15px;
       right: 15px;
-      width: 60px;
-      height: 60px;
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
       overflow: hidden;
       box-shadow: 0 4px 10px rgba(0,0,0,0.4);
@@ -159,9 +149,23 @@
       opacity: 0;
       pointer-events: none;
     }
+
+    /* Responsive adjustments for small screens */
+    @media (max-width: 500px) {
+      .color-button {
+        height: 40px;
+        font-size: 14px;
+        padding: 0 10px;
+      }
+      #blueButton { right: 70px; }
+      #pinkButton { right: 10px; }
+      #announcement {
+        font-size: 12px;
+        max-width: 180px;
+      }
+    }
   </style>
 </head>
-
 <body class="blue-theme">
   <h1>StuStudy</h1>
   <p class="subtitle">Study tools, notes, music, and productivity for students</p>
@@ -185,7 +189,6 @@
     <img src="feedback.png" alt="Feedback">
   </a>
 
-  <!-- Add the datetime element to the body -->
   <p id="datetime" class="subtitle"></p>
 
   <script>
@@ -198,28 +201,18 @@
       body.className = "pink-theme";
       localStorage.setItem("theme", "pink");
     };
-
     const saved = localStorage.getItem("theme");
     if (saved === "pink") body.className = "pink-theme";
 
-    document.getElementById("announcement").onclick = function () {
-      this.classList.toggle("hidden");
-    };
-
     const announcement = document.getElementById("announcement");
-
-    // On page load: check if user already closed it
     if (localStorage.getItem("announcementHidden") === "true") {
       announcement.style.display = "none";
     }
-
-    // When clicked: hide + save preference
     announcement.addEventListener("click", () => {
       announcement.style.display = "none";
       localStorage.setItem("announcementHidden", "true");
     });
 
-    // Function to update the date and time
     function updateDateTime() {
       const now = new Date();
       const dayOfWeek = now.toLocaleString('en-US', { weekday: 'long' });
@@ -227,12 +220,8 @@
       const time = now.toLocaleTimeString('en-US');
       document.getElementById('datetime').textContent = `${dayOfWeek}, ${date}, ${time}`;
     }
-
-    // Call the function to update date and time on page load
     updateDateTime();
-
-    // Optionally, you can set an interval to update it every second
-    setInterval(updateDateTime, 1000); // Updates every second
+    setInterval(updateDateTime, 1000);
   </script>
 </body>
 </html>
