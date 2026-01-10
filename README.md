@@ -1,4 +1,4 @@
-## Hi there 👋
+## Hi I made this website becuase I needed something to organize my time and I though about it and noticed that it was same for other students. So I made something simple so its easy to use and anyone can use it easily. If you are reading this and need something to organize your time I recomend you to use this I have a discord server and here's the link https://discord.gg/6ZJhGFMJt. Fun fact is that update the stustudy every sundays and saturdays so use it to organize your time.
 
 <!--
 **StuStudy/StuStudy** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
