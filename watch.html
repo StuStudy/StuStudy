@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Multi Timer & Stopwatch with Persistence</title>
-  <link rel="icon" type="image/png" href="WATCH.png">
   <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'none';">
   <meta http-equiv="X-Frame-Options" content="DENY">
 
@@ -195,6 +194,32 @@
     window.onload = () => {
       const savedTheme = localStorage.getItem("selectedTheme") || "blue-theme";
       applyTheme(savedTheme);
+
+      // Load saved custom time and timers state
+      const savedCustomTime = localStorage.getItem("customTime");
+      if (savedCustomTime) {
+        document.getElementById("customTimeInput").value = savedCustomTime;
+      }
+
+      // Load grid timers state
+      const savedTimersState = JSON.parse(localStorage.getItem("timersState")) || [];
+      savedTimersState.forEach((state, index) => {
+        timers[index].remaining = state.remaining;
+        timers[index].running = state.running;
+        timers[index].display.textContent = formatTime(state.remaining);
+        if (state.running) {
+          timers[index].btnStartPause.textContent = 'Pause';
+        }
+      });
+
+      // Load saved stopwatch state
+      const savedStopwatch = JSON.parse(localStorage.getItem("stopwatchState")) || { seconds: 0, running: false };
+      stopwatchTime = savedStopwatch.seconds;
+      stopwatchRunning = savedStopwatch.running;
+      swDisplay.textContent = formatStopwatch(stopwatchTime);
+      if (stopwatchRunning) {
+        swStartPause.textContent = "Pause";
+      }
     };
 
     // --- Timer and Stopwatch logic ---
@@ -260,6 +285,7 @@
               timer.btnReset.disabled = false;
               alarmSound.play();
             }
+            saveTimersState();
           }, 1000);
           timer.running = true;
           btnStartPause.textContent = 'Pause';
@@ -282,8 +308,18 @@
         timer.running = false;
         btnStartPause.textContent = 'Start';
         btnReset.disabled = true;
+        saveTimersState();
       };
     });
+
+    // Save grid timers state to localStorage
+    function saveTimersState() {
+      const timersState = timers.map(timer => ({
+        remaining: timer.remaining,
+        running: timer.running
+      }));
+      localStorage.setItem("timersState", JSON.stringify(timersState));
+    }
 
     // Custom Timer logic
     const customTimeInput = document.getElementById('customTimeInput');
@@ -294,6 +330,11 @@
     let customTimerRunning = false;
     let customTimerTime = 0;
     let customTimerInterval = null;
+
+    customTimeInput.oninput = () => {
+      // Save custom time input to localStorage
+      localStorage.setItem("customTime", customTimeInput.value);
+    };
 
     customTimerStartPause.onclick = () => {
       const customTime = parseInt(customTimeInput.value, 10);
@@ -334,6 +375,8 @@
       customTimerDisplay.textContent = "00:00";
       customTimerStartPause.textContent = "Start";
       customTimerReset.disabled = true;
+      // Clear saved custom timer state
+      localStorage.removeItem("customTimer");
     };
 
     // --- Stopwatch logic ---
@@ -341,8 +384,8 @@
     const swStartPause = document.getElementById('swStartPause');
     const swReset = document.getElementById('swReset');
 
-    let swRunning = false;
-    let swSeconds = 0;
+    let stopwatchRunning = false;
+    let stopwatchTime = 0;
     let swInterval = null;
 
     function formatStopwatch(seconds) {
@@ -353,29 +396,37 @@
     }
 
     swStartPause.onclick = () => {
-      if (!swRunning) {
+      if (!stopwatchRunning) {
         swInterval = setInterval(() => {
-          swSeconds++;
-          swDisplay.textContent = formatStopwatch(swSeconds);
+          stopwatchTime++;
+          swDisplay.textContent = formatStopwatch(stopwatchTime);
+          saveStopwatchState();
         }, 1000);
-        swRunning = true;
+        stopwatchRunning = true;
         swStartPause.textContent = 'Pause';
         swReset.disabled = false;
       } else {
         clearInterval(swInterval);
-        swRunning = false;
+        stopwatchRunning = false;
         swStartPause.textContent = 'Resume';
       }
     };
 
     swReset.onclick = () => {
       clearInterval(swInterval);
-      swSeconds = 0;
-      swRunning = false;
+      stopwatchTime = 0;
+      stopwatchRunning = false;
       swDisplay.textContent = '00:00:00';
       swStartPause.textContent = 'Start';
       swReset.disabled = true;
+      saveStopwatchState();
     };
+
+    // Save stopwatch state to localStorage
+    function saveStopwatchState() {
+      const stopwatchState = { seconds: stopwatchTime, running: stopwatchRunning };
+      localStorage.setItem("stopwatchState", JSON.stringify(stopwatchState));
+    }
   </script>
 
 </body>
