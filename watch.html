@@ -335,6 +335,47 @@
       customTimerStartPause.textContent = "Start";
       customTimerReset.disabled = true;
     };
+
+    // --- Stopwatch logic ---
+    const swDisplay = document.getElementById('stopwatchDisplay');
+    const swStartPause = document.getElementById('swStartPause');
+    const swReset = document.getElementById('swReset');
+
+    let swRunning = false;
+    let swSeconds = 0;
+    let swInterval = null;
+
+    function formatStopwatch(seconds) {
+      const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
+      const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+      const s = (seconds % 60).toString().padStart(2, '0');
+      return `${h}:${m}:${s}`;
+    }
+
+    swStartPause.onclick = () => {
+      if (!swRunning) {
+        swInterval = setInterval(() => {
+          swSeconds++;
+          swDisplay.textContent = formatStopwatch(swSeconds);
+        }, 1000);
+        swRunning = true;
+        swStartPause.textContent = 'Pause';
+        swReset.disabled = false;
+      } else {
+        clearInterval(swInterval);
+        swRunning = false;
+        swStartPause.textContent = 'Resume';
+      }
+    };
+
+    swReset.onclick = () => {
+      clearInterval(swInterval);
+      swSeconds = 0;
+      swRunning = false;
+      swDisplay.textContent = '00:00:00';
+      swStartPause.textContent = 'Start';
+      swReset.disabled = true;
+    };
   </script>
 
 </body>
