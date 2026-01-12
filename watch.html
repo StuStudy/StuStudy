@@ -156,6 +156,18 @@
         <button id="swReset" disabled>Reset</button>
       </div>
     </div>
+
+    <!-- Custom Timer -->
+    <div class="timer-card" id="customTimer">
+      <div class="timer-label">Custom Timer</div>
+      <input type="number" id="customTimeInput" placeholder="Enter time in minutes" min="1" />
+      <div class="time-display" id="customTimerDisplay">00:00</div>
+      <div class="buttons">
+        <button id="customTimerStartPause">Start</button>
+        <button id="customTimerReset" disabled>Reset</button>
+      </div>
+    </div>
+
   </div>
 
   <audio id="alarmSound" src="alarm.mp3" preload="auto"></audio>
@@ -166,41 +178,38 @@
     const blueButton = document.getElementById("blueButton");
     const pinkButton = document.getElementById("pinkButton");
 
+    // Apply the selected theme
     function applyTheme(theme) {
       body.classList.remove("blue-theme", "pink-theme");
       if (theme) body.classList.add(theme);
       localStorage.setItem("selectedTheme", theme);
     }
 
+    // Click event for Blue button
     blueButton.onclick = () => applyTheme("blue-theme");
+
+    // Click event for Pink button
     pinkButton.onclick = () => applyTheme("pink-theme");
 
-    // Load saved theme or default to blue
+    // Load saved theme or default to blue on page load
     window.onload = () => {
       const savedTheme = localStorage.getItem("selectedTheme") || "blue-theme";
       applyTheme(savedTheme);
-      loadTimersState();
-      loadStopwatchState();
     };
 
     // --- Timer and Stopwatch logic ---
     const timersGrid = document.getElementById('timersGrid');
     const alarmSound = document.getElementById('alarmSound');
 
-    // Timer durations in minutes
-    const timerMinutes = [5,10,15,30,45,60,75,90,105,120, 180, 280]; // Added 180 and 280
-
-    // Store timers state
+    const timerMinutes = [5,10,15,30,45,60,75,90,105,120, 180, 280]; 
     const timers = [];
 
-    // Format seconds into MM:SS
     function formatTime(seconds) {
       const m = Math.floor(seconds / 60).toString().padStart(2, '0');
       const s = (seconds % 60).toString().padStart(2, '0');
       return `${m}:${s}`;
     }
 
-    // Create timer elements dynamically
     timerMinutes.forEach((mins, index) => {
       const card = document.createElement('div');
       card.className = 'timer-card';
@@ -213,7 +222,6 @@
       display.className = 'time-display';
       display.textContent = formatTime(mins * 60);
 
-      // Buttons
       const btnStartPause = document.createElement('button');
       btnStartPause.textContent = 'Start';
 
@@ -228,7 +236,6 @@
       card.append(label, display, btnsDiv);
       timersGrid.appendChild(card);
 
-      // Timer object to keep state
       timers.push({
         id: index,
         duration: mins * 60,
@@ -240,34 +247,27 @@
         btnReset
       });
 
-      // Button logic
       btnStartPause.onclick = () => {
         const timer = timers[index];
         if (!timer.running && timer.remaining > 0) {
-          // Start timer
           timer.intervalId = setInterval(() => {
             timer.remaining--;
             timer.display.textContent = formatTime(timer.remaining);
-            saveTimerState(timer);
             if (timer.remaining <= 0) {
               clearInterval(timer.intervalId);
               timer.running = false;
               timer.btnStartPause.textContent = "Start";
               timer.btnReset.disabled = false;
-              saveTimerState(timer);
               alarmSound.play();
             }
           }, 1000);
           timer.running = true;
           btnStartPause.textContent = 'Pause';
           btnReset.disabled = false;
-          saveTimerState(timer);
         } else if (timer.running) {
-          // Pause timer
           clearInterval(timer.intervalId);
           timer.running = false;
           btnStartPause.textContent = 'Start';
-          saveTimerState(timer);
         }
       };
 
@@ -282,160 +282,58 @@
         timer.running = false;
         btnStartPause.textContent = 'Start';
         btnReset.disabled = true;
-        saveTimerState(timer);
       };
     });
 
-    // Save timer state to localStorage
-    function saveTimerState(timer) {
-      const key = `timer_${timer.id}`;
-      const data = {
-        remaining: timer.remaining,
-        running: timer.running,
-        lastUpdate: Date.now()
-      };
-      localStorage.setItem(key, JSON.stringify(data));
-    }
+    // Custom Timer logic
+    const customTimeInput = document.getElementById('customTimeInput');
+    const customTimerDisplay = document.getElementById('customTimerDisplay');
+    const customTimerStartPause = document.getElementById('customTimerStartPause');
+    const customTimerReset = document.getElementById('customTimerReset');
 
-    // Load timers state from localStorage
-    function loadTimersState() {
-      timers.forEach(timer => {
-        const key = `timer_${timer.id}`;
-        const saved = localStorage.getItem(key);
-        if (saved) {
-          try {
-            const data = JSON.parse(saved);
-            const elapsed = Math.floor((Date.now() - data.lastUpdate) / 1000);
-            let rem = data.remaining;
-            if (data.running) {
-              rem = Math.max(0, rem - elapsed);
-            }
-            timer.remaining = rem;
-            timer.display.textContent = formatTime(rem);
-            timer.running = false; // We'll start timer only if running is true below
-            timer.btnReset.disabled = rem === timer.duration;
+    let customTimerRunning = false;
+    let customTimerTime = 0;
+    let customTimerInterval = null;
 
-            if (rem === 0) {
-              timer.btnStartPause.textContent = "Start";
-              timer.btnReset.disabled = false;
-            } else if (data.running) {
-              // Start the timer again with updated remaining time
-              timer.btnStartPause.textContent = "Pause";
-              timer.btnReset.disabled = false;
-              timer.intervalId = setInterval(() => {
-                timer.remaining--;
-                timer.display.textContent = formatTime(timer.remaining);
-                saveTimerState(timer);
-                if (timer.remaining <= 0) {
-                  clearInterval(timer.intervalId);
-                  timer.running = false;
-                  timer.btnStartPause.textContent = "Start";
-                  timer.btnReset.disabled = false;
-                  saveTimerState(timer);
-                  alarmSound.play();
-                }
-              }, 1000);
-              timer.running = true;
-            } else {
-              timer.btnStartPause.textContent = "Start";
-            }
-          } catch {
-            // corrupted data - ignore
+    customTimerStartPause.onclick = () => {
+      const customTime = parseInt(customTimeInput.value, 10);
+      if (isNaN(customTime) || customTime <= 0) {
+        alert("Please enter a valid number of minutes.");
+        return;
+      }
+
+      if (!customTimerRunning) {
+        customTimerTime = customTimerTime || customTime * 60;
+        customTimerDisplay.textContent = formatTime(customTimerTime);
+
+        customTimerInterval = setInterval(() => {
+          customTimerTime--;
+          customTimerDisplay.textContent = formatTime(customTimerTime);
+          if (customTimerTime <= 0) {
+            clearInterval(customTimerInterval);
+            customTimerRunning = false;
+            customTimerStartPause.textContent = "Start";
+            customTimerReset.disabled = false;
+            alarmSound.play();
           }
-        }
-      });
-    }
-
-    // Stopwatch logic
-    const swDisplay = document.getElementById('stopwatchDisplay');
-    const swStartPauseBtn = document.getElementById('swStartPause');
-    const swResetBtn = document.getElementById('swReset');
-
-    let stopwatchRunning = false;
-    let stopwatchTime = 0;
-    let stopwatchInterval = null;
-
-    // Function to format stopwatch time into HH:MM:SS
-    function formatStopwatchTime(seconds) {
-      const hrs = Math.floor(seconds / 3600).toString().padStart(2, '0');
-      const mins = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
-      const secs = (seconds % 60).toString().padStart(2, '0');
-      return `${hrs}:${mins}:${secs}`;
-    }
-
-    // Start/Pause button functionality
-    swStartPauseBtn.onclick = () => {
-      if (!stopwatchRunning) {
-        // Start stopwatch
-        stopwatchInterval = setInterval(() => {
-          stopwatchTime++;
-          swDisplay.textContent = formatStopwatchTime(stopwatchTime);
-          saveStopwatchState();
         }, 1000);
-        stopwatchRunning = true;
-        swStartPauseBtn.textContent = "Pause";
-        swResetBtn.disabled = false;
+        customTimerRunning = true;
+        customTimerStartPause.textContent = 'Pause';
+        customTimerReset.disabled = false;
       } else {
-        // Pause stopwatch
-        clearInterval(stopwatchInterval);
-        stopwatchRunning = false;
-        swStartPauseBtn.textContent = "Resume";
-        saveStopwatchState();
+        clearInterval(customTimerInterval);
+        customTimerRunning = false;
+        customTimerStartPause.textContent = 'Resume';
       }
     };
 
-    // Reset button functionality
-    swResetBtn.onclick = () => {
-      clearInterval(stopwatchInterval);
-      stopwatchRunning = false;
-      stopwatchTime = 0;
-      swDisplay.textContent = "00:00:00";
-      swStartPauseBtn.textContent = "Start";
-      swResetBtn.disabled = true;
-      saveStopwatchState();
-    };
-
-    // Save stopwatch state to localStorage
-    function saveStopwatchState() {
-      const data = {
-        time: stopwatchTime,
-        running: stopwatchRunning,
-        lastUpdate: Date.now()
-      };
-      localStorage.setItem("stopwatchState", JSON.stringify(data));
-    }
-
-    // Load stopwatch state from localStorage
-    function loadStopwatchState() {
-      const saved = localStorage.getItem("stopwatchState");
-      if (saved) {
-        try {
-          const data = JSON.parse(saved);
-          const elapsed = Math.floor((Date.now() - data.lastUpdate) / 1000);
-          stopwatchTime = data.running ? Math.max(0, data.time + elapsed) : data.time;
-          swDisplay.textContent = formatStopwatchTime(stopwatchTime);
-
-          if (data.running) {
-            stopwatchInterval = setInterval(() => {
-              stopwatchTime++;
-              swDisplay.textContent = formatStopwatchTime(stopwatchTime);
-              saveStopwatchState();
-            }, 1000);
-            stopwatchRunning = true;
-            swStartPauseBtn.textContent = "Pause";
-            swResetBtn.disabled = false;
-          } else {
-            swStartPauseBtn.textContent = "Resume";
-          }
-        } catch (e) {
-          console.error("Error loading stopwatch state:", e);
-        }
-      }
-    }
-
-    // Load saved stopwatch state on page load
-    window.onload = () => {
-      loadStopwatchState();
+    customTimerReset.onclick = () => {
+      clearInterval(customTimerInterval);
+      customTimerRunning = false;
+      customTimerTime = 0;
+      customTimerDisplay.textContent = "00:00";
+      customTimerStartPause.textContent = "Start";
+      customTimerReset.disabled = true;
     };
   </script>
 
