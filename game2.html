@@ -2,229 +2,245 @@
 <html lang="en">
 
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Snake Game</title>
-<style>
-body {
-display: flex;
-justify-content: center;
-align-items: center;
-height: 100vh;
-background-color: #222;
-margin: 0;
-font-family: Arial, sans-serif;
-color: white;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #222;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
 
-canvas {
-border: 1px solid white;
-}
+        canvas {
+            border: 1px solid white;
+        }
 
-.game-info {
-position: absolute;
-top: 20px;
-left: 20px;
-font-size: 18px;
-z-index: 10;
-}
+        .game-info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 18px;
+            z-index: 10;
+        }
 
-.game-over {
-position: absolute;
-top: 50%;
-left: 50%;
-transform: translate(-50%, -50%);
-color: white;
-font-size: 30px;
-font-weight: bold;
-display: none;
-}
-</style>
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 30px;
+            font-weight: bold;
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
 <canvas id="gameCanvas" width="400" height="400"></canvas>
 <div id="gameInfo" class="game-info">
-<div id="currentScore">Score: 0</div>
-<div id="highScore">Highest Score: 0</div>
+    <div id="currentScore">Score: 0</div>
+    <div id="highScore">Highest Score: 0</div>
 </div>
 <div id="gameOver" class="game-over">Game Over! Press R to Restart</div>
 
 <script>
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
 
-const scale = 20;
-const rows = canvas.height / scale;
-const columns = canvas.width / scale;
+    const scale = 20;
+    const rows = canvas.height / scale;
+    const columns = canvas.width / scale;
 
-let snake;
-let food;
-let gameOver = false;
-let currentScore = 0;
-let highScore = localStorage.getItem('highScore') ? parseInt(localStorage.getItem('highScore')) : 0;
+    let snake;
+    let food;
+    let gameOver = false;
+    let currentScore = 0;
+    let highScore = localStorage.getItem('highScore') ? parseInt(localStorage.getItem('highScore')) : 0;
 
-const currentScoreDisplay = document.getElementById("currentScore");
-const highScoreDisplay = document.getElementById("highScore");
-const gameOverDisplay = document.getElementById("gameOver");
+    const currentScoreDisplay = document.getElementById("currentScore");
+    const highScoreDisplay = document.getElementById("highScore");
+    const gameOverDisplay = document.getElementById("gameOver");
 
-(function setup() {
-snake = new Snake();
-food = new Food();
-window.setInterval(gameLoop, 100);
-document.addEventListener("keydown", changeDirection);
-updateHighScoreDisplay();
-})();
+    // Load images for the snake
+    const snakeHeadImg = new Image();
+    const snakeBodyImg = new Image();
+    snakeHeadImg.src = 'snakeHead.png';  // Path to snake head image
+    snakeBodyImg.src = 'snakeBody.png';  // Path to snake body image
 
-function gameLoop() {
-if (gameOver) return;
-ctx.clearRect(0, 0, canvas.width, canvas.height);
-snake.update();
-snake.draw();
-food.draw();
-checkCollision();
-updateScore();
-}
+    (function setup() {
+        snake = new Snake();
+        food = new Food();
+        window.setInterval(gameLoop, 100);
+        document.addEventListener("keydown", changeDirection);
+        updateHighScoreDisplay();
+    })();
 
-function checkCollision() {
-if (snake.x < 0 || snake.y < 0 || snake.x >= canvas.width || snake.y >= canvas.height) {
-endGame();
-}
+    function gameLoop() {
+        if (gameOver) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-// Check if snake eats itself
-for (let i = 0; i < snake.tail.length; i++) {
-if (snake.x === snake.tail[i].x && snake.y === snake.tail[i].y) {
-endGame();
-}
-}
+        // Background color (green)
+        ctx.fillStyle = "green";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-// Check if snake eats food
-if (snake.x === food.x && snake.y === food.y) {
-snake.grow();
-food.randomize();
-increaseScore();
-}
-}
+        // Draw the snake, food, etc.
+        snake.update();
+        snake.draw();
+        food.draw();
+        checkCollision();
+        updateScore();
+    }
 
-function increaseScore() {
-currentScore++;
-if (currentScore > highScore) {
-highScore = currentScore;
-localStorage.setItem('highScore', highScore); // Save to localStorage
-}
-}
+    function checkCollision() {
+        if (snake.x < 0 || snake.y < 0 || snake.x >= canvas.width || snake.y >= canvas.height) {
+            endGame();
+        }
 
-function updateScore() {
-currentScoreDisplay.textContent = `Score: ${currentScore}`;
-highScoreDisplay.textContent = `High Score: ${highScore}`;
-}
+        // Check if snake eats itself (no tail in this version)
+        for (let i = 0; i < snake.body.length; i++) {
+            if (snake.x === snake.body[i].x && snake.y === snake.body[i].y) {
+                endGame();
+            }
+        }
 
-function endGame() {
-gameOver = true;
-gameOverDisplay.style.display = "block";
-saveHighScore();
-}
+        // Check if snake eats food
+        if (snake.x === food.x && snake.y === food.y) {
+            snake.grow();
+            food.randomize();
+            increaseScore();
+        }
+    }
 
-function saveHighScore() {
-localStorage.setItem('highScore', highScore); // Save the highest score to localStorage
-}
+    function increaseScore() {
+        currentScore++;
+        if (currentScore > highScore) {
+            highScore = currentScore;
+            localStorage.setItem('highScore', highScore); // Save to localStorage
+        }
+    }
 
-function changeDirection(event) {
-const key = event.keyCode;
-if (key === 37 || key === 65) { // Left Arrow or A key
-if (snake.direction !== "right") {
-snake.setDirection("left");
-}
-}
-if (key === 38 || key === 87) { // Up Arrow or W key
-if (snake.direction !== "down") {
-snake.setDirection("up");
-}
-}
-if (key === 39 || key === 68) { // Right Arrow or D key
-if (snake.direction !== "left") {
-snake.setDirection("right");
-}
-}
-if (key === 40 || key === 83) { // Down Arrow or S key
-if (snake.direction !== "up") {
-snake.setDirection("down");
-}
-}
-if (key === 82 && gameOver) { // R key to restart
-restartGame();
-}
-}
+    function updateScore() {
+        currentScoreDisplay.textContent = `Score: ${currentScore}`;
+        highScoreDisplay.textContent = `High Score: ${highScore}`;
+    }
 
-function restartGame() {
-gameOver = false;
-currentScore = 0;
-snake = new Snake();
-food = new Food();
-gameOverDisplay.style.display = "none";
-updateScore();
-}
+    function endGame() {
+        gameOver = true;
+        gameOverDisplay.style.display = "block";
+        saveHighScore();
+    }
 
-function Snake() {
-this.x = 100;
-this.y = 100;
-this.direction = "right";
-this.tail = [];
+    function saveHighScore() {
+        localStorage.setItem('highScore', highScore); // Save the highest score to localStorage
+    }
 
-this.update = function () {
-for (let i = 0; i < this.tail.length - 1; i++) {
-this.tail[i] = this.tail[i + 1];
-}
-this.tail[this.tail.length - 1] = { x: this.x, y: this.y };
+    function changeDirection(event) {
+        const key = event.keyCode;
 
-if (this.direction === "left") {
-this.x -= scale;
-} else if (this.direction === "up") {
-this.y -= scale;
-} else if (this.direction === "right") {
-this.x += scale;
-} else if (this.direction === "down") {
-this.y += scale;
-}
-};
+        // Prevent reversing the direction (no 180-degree turns)
+        if (key === 37 || key === 65) { // Left Arrow or A key
+            if (snake.direction !== "right") {
+                snake.setDirection("left");
+            }
+        }
+        if (key === 38 || key === 87) { // Up Arrow or W key
+            if (snake.direction !== "down") {
+                snake.setDirection("up");
+            }
+        }
+        if (key === 39 || key === 68) { // Right Arrow or D key
+            if (snake.direction !== "left") {
+                snake.setDirection("right");
+            }
+        }
+        if (key === 40 || key === 83) { // Down Arrow or S key
+            if (snake.direction !== "up") {
+                snake.setDirection("down");
+            }
+        }
+        if (key === 82 && gameOver) { // R key to restart
+            restartGame();
+        }
+    }
 
-this.grow = function () {
-this.tail.push({});
-};
+    function restartGame() {
+        gameOver = false;
+        currentScore = 0;
+        snake = new Snake();
+        food = new Food();
+        gameOverDisplay.style.display = "none";
+        updateScore();
+    }
 
-this.setDirection = function (direction) {
-this.direction = direction;
-};
+    function Snake() {
+        this.x = 100;
+        this.y = 100;
+        this.direction = "right";
+        this.body = []; // Only keep body, no tail
 
-this.draw = function () {
-ctx.fillStyle = "lime";
-for (let i = 0; i < this.tail.length; i++) {
-ctx.fillRect(this.tail[i].x, this.tail[i].y, scale, scale);
-}
-ctx.fillRect(this.x, this.y, scale, scale);
-};
-}
+        this.update = function () {
+            for (let i = 0; i < this.body.length - 1; i++) {
+                this.body[i] = this.body[i + 1];
+            }
+            this.body[this.body.length - 1] = { x: this.x, y: this.y };
 
-function Food() {
-this.x = Math.floor(Math.random() * rows) * scale;
-this.y = Math.floor(Math.random() * columns) * scale;
+            if (this.direction === "left") {
+                this.x -= scale;
+            } else if (this.direction === "up") {
+                this.y -= scale;
+            } else if (this.direction === "right") {
+                this.x += scale;
+            } else if (this.direction === "down") {
+                this.y += scale;
+            }
+        };
 
-this.randomize = function () {
-this.x = Math.floor(Math.random() * rows) * scale;
-this.y = Math.floor(Math.random() * columns) * scale;
-};
+        this.grow = function () {
+            this.body.push({});
+        };
 
-this.draw = function () {
-ctx.fillStyle = "red";
-ctx.fillRect(this.x, this.y, scale, scale);
-};
-}
+        this.setDirection = function (direction) {
+            this.direction = direction;
+        };
 
-function updateHighScoreDisplay() {
-highScoreDisplay.textContent = `High Score: ${highScore}`;
-}
+        this.draw = function () {
+            // Draw the snake head
+            ctx.drawImage(snakeHeadImg, this.x, this.y, scale, scale);
+
+            // Draw the body parts (skip the tail since there's no tail now)
+            for (let i = 0; i < this.body.length; i++) {
+                const bodyPart = this.body[i];
+                ctx.drawImage(snakeBodyImg, bodyPart.x, bodyPart.y, scale, scale);
+            }
+        };
+    }
+
+    function Food() {
+        this.x = Math.floor(Math.random() * rows) * scale;
+        this.y = Math.floor(Math.random() * columns) * scale;
+
+        this.randomize = function () {
+            this.x = Math.floor(Math.random() * rows) * scale;
+            this.y = Math.floor(Math.random() * columns) * scale;
+        };
+
+        this.draw = function () {
+            ctx.fillStyle = "red";
+            ctx.fillRect(this.x, this.y, scale, scale); // Draw the food
+        };
+    }
+
+    function updateHighScoreDisplay() {
+        highScoreDisplay.textContent = `High Score: ${highScore}`;
+    }
 </script>
 </body>
 
 </html>
-
