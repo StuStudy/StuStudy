@@ -74,6 +74,8 @@
     snakeHeadImg.src = 'snakeHead.png';  // Path to snake head image
     snakeBodyImg.src = 'snakeBody.png';  // Path to snake body image
 
+    let lastDirection = 'right'; // To store the last direction to prevent 180-degree turn
+
     (function setup() {
         snake = new Snake();
         food = new Food();
@@ -144,25 +146,29 @@
     function changeDirection(event) {
         const key = event.keyCode;
 
-        // Prevent reversing the direction (no 180-degree turns)
+        // Prevent reversing direction: check for opposite directions
         if (key === 37 || key === 65) { // Left Arrow or A key
-            if (snake.direction !== "right") {
+            if (lastDirection !== "right") {
                 snake.setDirection("left");
+                lastDirection = "left"; // Update last direction
             }
         }
         if (key === 38 || key === 87) { // Up Arrow or W key
-            if (snake.direction !== "down") {
+            if (lastDirection !== "down") {
                 snake.setDirection("up");
+                lastDirection = "up"; // Update last direction
             }
         }
         if (key === 39 || key === 68) { // Right Arrow or D key
-            if (snake.direction !== "left") {
+            if (lastDirection !== "left") {
                 snake.setDirection("right");
+                lastDirection = "right"; // Update last direction
             }
         }
         if (key === 40 || key === 83) { // Down Arrow or S key
-            if (snake.direction !== "up") {
+            if (lastDirection !== "up") {
                 snake.setDirection("down");
+                lastDirection = "down"; // Update last direction
             }
         }
         if (key === 82 && gameOver) { // R key to restart
