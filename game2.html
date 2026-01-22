@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Snake Game</title>
+
     <style>
         body {
             display: flex;
@@ -26,7 +26,6 @@
             top: 20px;
             left: 20px;
             font-size: 18px;
-            z-index: 10;
         }
 
         .game-over {
@@ -34,7 +33,6 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            color: white;
             font-size: 30px;
             font-weight: bold;
             display: none;
@@ -43,11 +41,14 @@
 </head>
 
 <body>
+
 <canvas id="gameCanvas" width="400" height="400"></canvas>
-<div id="gameInfo" class="game-info">
+
+<div class="game-info">
     <div id="currentScore">Score: 0</div>
-    <div id="highScore">Highest Score: 0</div>
+    <div id="highScore">High Score: 0</div>
 </div>
+
 <div id="gameOver" class="game-over">Game Over! Press R to Restart</div>
 
 <script>
@@ -62,118 +63,111 @@
     let food;
     let gameOver = false;
     let currentScore = 0;
-    let highScore = localStorage.getItem('highScore') ? parseInt(localStorage.getItem('highScore')) : 0;
+
+    let highScore = localStorage.getItem("highScore")
+        ? parseInt(localStorage.getItem("highScore"))
+        : 0;
 
     const currentScoreDisplay = document.getElementById("currentScore");
     const highScoreDisplay = document.getElementById("highScore");
     const gameOverDisplay = document.getElementById("gameOver");
 
-    // Load images for the snake
+    // Direction control
+    let nextDirection = "right";
+    let directionLocked = false;
+
+    // Images
     const snakeHeadImg = new Image();
     const snakeBodyImg = new Image();
-    snakeHeadImg.src = 'snakeHead.png';  // Path to snake head image
-    snakeBodyImg.src = 'snakeBody.png';  // Path to snake body image
-
-    let lastDirection = 'right'; // To store the last direction to prevent 180-degree turn
+    snakeHeadImg.src = "snakeHead.png";
+    snakeBodyImg.src = "snakeBody.png";
 
     (function setup() {
         snake = new Snake();
         food = new Food();
+        updateScore();
         window.setInterval(gameLoop, 100);
         document.addEventListener("keydown", changeDirection);
-        updateHighScoreDisplay();
     })();
 
     function gameLoop() {
         if (gameOver) return;
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Background color (green)
         ctx.fillStyle = "green";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Draw the snake, food, etc.
+        // Apply only ONE direction per tick
+        snake.setDirection(nextDirection);
+        directionLocked = false;
+
         snake.update();
         snake.draw();
         food.draw();
+
         checkCollision();
         updateScore();
     }
 
     function checkCollision() {
-        if (snake.x < 0 || snake.y < 0 || snake.x >= canvas.width || snake.y >= canvas.height) {
+        // Wall collision
+        if (
+            snake.x < 0 ||
+            snake.y < 0 ||
+            snake.x >= canvas.width ||
+            snake.y >= canvas.height
+        ) {
             endGame();
         }
 
-        // Check if snake eats itself (no tail in this version)
-        for (let i = 0; i < snake.body.length; i++) {
-            if (snake.x === snake.body[i].x && snake.y === snake.body[i].y) {
+        // Self collision
+        for (let part of snake.body) {
+            if (snake.x === part.x && snake.y === part.y) {
                 endGame();
             }
         }
 
-        // Check if snake eats food
+        // Food collision
         if (snake.x === food.x && snake.y === food.y) {
             snake.grow();
             food.randomize();
-            increaseScore();
+            currentScore++;
+
+            if (currentScore > highScore) {
+                highScore = currentScore;
+                localStorage.setItem("highScore", highScore);
+            }
         }
-    }
-
-    function increaseScore() {
-        currentScore++;
-        if (currentScore > highScore) {
-            highScore = currentScore;
-            localStorage.setItem('highScore', highScore); // Save to localStorage
-        }
-    }
-
-    function updateScore() {
-        currentScoreDisplay.textContent = `Score: ${currentScore}`;
-        highScoreDisplay.textContent = `High Score: ${highScore}`;
-    }
-
-    function endGame() {
-        gameOver = true;
-        gameOverDisplay.style.display = "block";
-        saveHighScore();
-    }
-
-    function saveHighScore() {
-        localStorage.setItem('highScore', highScore); // Save the highest score to localStorage
     }
 
     function changeDirection(event) {
-        const key = event.keyCode;
+        let newDirection = null;
 
-        // Prevent reversing direction: check for opposite directions
-        if (key === 37 || key === 65) { // Left Arrow or A key
-            if (lastDirection !== "right") {
-                snake.setDirection("left");
-                lastDirection = "left"; // Update last direction
-            }
-        }
-        if (key === 38 || key === 87) { // Up Arrow or W key
-            if (lastDirection !== "down") {
-                snake.setDirection("up");
-                lastDirection = "up"; // Update last direction
-            }
-        }
-        if (key === 39 || key === 68) { // Right Arrow or D key
-            if (lastDirection !== "left") {
-                snake.setDirection("right");
-                lastDirection = "right"; // Update last direction
-            }
-        }
-        if (key === 40 || key === 83) { // Down Arrow or S key
-            if (lastDirection !== "up") {
-                snake.setDirection("down");
-                lastDirection = "down"; // Update last direction
-            }
-        }
-        if (key === 82 && gameOver) { // R key to restart
+        if (event.keyCode === 37 || event.keyCode === 65) newDirection = "left";
+        if (event.keyCode === 38 || event.keyCode === 87) newDirection = "up";
+        if (event.keyCode === 39 || event.keyCode === 68) newDirection = "right";
+        if (event.keyCode === 40 || event.keyCode === 83) newDirection = "down";
+
+        if (event.keyCode === 82 && gameOver) {
             restartGame();
+            return;
         }
+
+        if (!newDirection || directionLocked) return;
+
+        // Prevent reversing direction
+        if (
+            (snake.direction === "left" && newDirection === "right") ||
+            (snake.direction === "right" && newDirection === "left") ||
+            (snake.direction === "up" && newDirection === "down") ||
+            (snake.direction === "down" && newDirection === "up")
+        ) {
+            return;
+        }
+
+        nextDirection = newDirection;
+        directionLocked = true;
     }
 
     function restartGame() {
@@ -181,72 +175,84 @@
         currentScore = 0;
         snake = new Snake();
         food = new Food();
+        nextDirection = "right";
         gameOverDisplay.style.display = "none";
-        updateScore();
+    }
+
+    function endGame() {
+        gameOver = true;
+        gameOverDisplay.style.display = "block";
+    }
+
+    function updateScore() {
+        currentScoreDisplay.textContent = `Score: ${currentScore}`;
+        highScoreDisplay.textContent = `High Score: ${highScore}`;
+    }
+
+    function isFoodOnSnake(x, y) {
+        if (snake.x === x && snake.y === y) return true;
+        return snake.body.some(part => part.x === x && part.y === y);
     }
 
     function Snake() {
         this.x = 100;
         this.y = 100;
         this.direction = "right";
-        this.body = []; // Only keep body, no tail
+        this.body = [];
 
         this.update = function () {
-            for (let i = 0; i < this.body.length - 1; i++) {
-                this.body[i] = this.body[i + 1];
+            if (this.body.length) {
+                for (let i = 0; i < this.body.length - 1; i++) {
+                    this.body[i] = this.body[i + 1];
+                }
+                this.body[this.body.length - 1] = { x: this.x, y: this.y };
             }
-            this.body[this.body.length - 1] = { x: this.x, y: this.y };
 
-            if (this.direction === "left") {
-                this.x -= scale;
-            } else if (this.direction === "up") {
-                this.y -= scale;
-            } else if (this.direction === "right") {
-                this.x += scale;
-            } else if (this.direction === "down") {
-                this.y += scale;
-            }
+            if (this.direction === "left") this.x -= scale;
+            if (this.direction === "up") this.y -= scale;
+            if (this.direction === "right") this.x += scale;
+            if (this.direction === "down") this.y += scale;
         };
 
         this.grow = function () {
             this.body.push({});
         };
 
-        this.setDirection = function (direction) {
-            this.direction = direction;
+        this.setDirection = function (dir) {
+            this.direction = dir;
         };
 
         this.draw = function () {
-            // Draw the snake head
             ctx.drawImage(snakeHeadImg, this.x, this.y, scale, scale);
-
-            // Draw the body parts (skip the tail since there's no tail now)
-            for (let i = 0; i < this.body.length; i++) {
-                const bodyPart = this.body[i];
-                ctx.drawImage(snakeBodyImg, bodyPart.x, bodyPart.y, scale, scale);
+            for (let part of this.body) {
+                ctx.drawImage(snakeBodyImg, part.x, part.y, scale, scale);
             }
         };
     }
 
     function Food() {
-        this.x = Math.floor(Math.random() * rows) * scale;
-        this.y = Math.floor(Math.random() * columns) * scale;
+        this.x = 0;
+        this.y = 0;
 
         this.randomize = function () {
-            this.x = Math.floor(Math.random() * rows) * scale;
-            this.y = Math.floor(Math.random() * columns) * scale;
+            let x, y;
+            do {
+                x = Math.floor(Math.random() * rows) * scale;
+                y = Math.floor(Math.random() * columns) * scale;
+            } while (isFoodOnSnake(x, y));
+
+            this.x = x;
+            this.y = y;
         };
 
         this.draw = function () {
             ctx.fillStyle = "red";
-            ctx.fillRect(this.x, this.y, scale, scale); // Draw the food
+            ctx.fillRect(this.x, this.y, scale, scale);
         };
-    }
 
-    function updateHighScoreDisplay() {
-        highScoreDisplay.textContent = `High Score: ${highScore}`;
+        this.randomize();
     }
 </script>
-</body>
 
+</body>
 </html>
